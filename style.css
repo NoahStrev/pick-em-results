@@ -5,7 +5,7 @@
   --gold: #F2B84D;
   --gold-dim: #A6803C;
   --green: #3DD68C;
-  --red: #E5484D;
+  --red: #F06B70;
   --blue: #6C9BF5;
   --text: #F0F2F7;
   --muted: #92A0B5;
@@ -86,6 +86,10 @@ main {
   border-radius: 16px;
   padding: 18px 22px 22px;
   position: relative;
+  min-width: 0; /* grid items default to min-width:auto, which refuses to
+                   shrink below content size (e.g. the WOW heatmap) even
+                   with overflow-x:auto on a child -- this lets the grid
+                   track's width win so the child's own scroll takes over */
 }
 
 .tag {
@@ -152,10 +156,16 @@ select, .select {
 }
 .kpi .value.small { font-size: 22px; }
 
+.table-wrap {
+  overflow-x: auto;
+  min-width: 0; /* same grid-item shrink fix as .panel, see above */
+}
+
 table.pick-log {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  white-space: nowrap;
 }
 table.pick-log th {
   text-align: left;

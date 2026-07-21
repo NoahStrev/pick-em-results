@@ -1,13 +1,13 @@
 const PALETTE = {
   navy: "#0A1424", panel: "#15213A", gold: "#F2B84D", goldDim: "#A6803C",
-  green: "#3DD68C", red: "#E5484D", blue: "#6C9BF5", text: "#F0F2F7", muted: "#92A0B5",
+  green: "#3DD68C", red: "#F06B70", blue: "#6C9BF5", text: "#F0F2F7", muted: "#92A0B5",
 };
 
 const PERSON_COLORS = {
   "Abe Stockwell": "#F2B84D",
   "Anthony Biancalana": "#3DD68C",
   "Jacob Dyce": "#6C9BF5",
-  "Nick Kerkhoff": "#E5484D",
+  "Nick Kerkhoff": "#F06B70",
   "Noah Streveler": "#D4A5F5",
 };
 
