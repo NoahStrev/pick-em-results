@@ -65,6 +65,15 @@ nav.tabs a.active {
   background: var(--gold);
   border-color: var(--gold);
 }
+nav.tabs a:hover:not(.active) {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+a:focus-visible, select:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 2px;
+}
 
 main {
   padding: 24px 40px 60px;
@@ -188,6 +197,9 @@ table.pick-log tr:hover td { background: #1a2947; }
   display: grid;
   gap: 3px;
   overflow-x: auto;
+  padding: 0 6px; /* winner cells scale(1.12) from center, so a winner in
+                     the first/last column bleeds past the grid edge and
+                     gets clipped by overflow-x:auto without this buffer */
 }
 .heatmap .hcell {
   display: flex;
