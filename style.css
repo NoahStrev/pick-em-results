@@ -232,7 +232,17 @@ footer.credit {
   padding: 20px 0 40px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) and (min-width: 721px) {
+  /* the 3-column team-pick tables (Roommate/Team/Count, with names up to
+     ~19 chars and white-space:nowrap) need ~250px+ per column to avoid
+     forcing horizontal scroll just to read a name -- a fixed 3-way split
+     doesn't clear that until ~1450px wide. 2 columns (3rd item wraps
+     below) needs viewport >= ~708px to clear it instead (see the 720px
+     single-column cutoff below); checked empirically at 700/721/900/1024. */
+  .grid-3col { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 720px) {
   header.top {
     flex-direction: column;
     align-items: flex-start;
