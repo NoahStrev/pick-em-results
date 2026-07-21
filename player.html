@@ -56,6 +56,16 @@
         <h2 class="red" style="font-size:18px;">MOST MISSED PICK</h2>
         <p class="sub" id="mostMissedOut" style="font-size:16px; color:var(--text);">--</p>
       </div>
+      <div class="panel">
+        <span class="tag">GUARANTEED WINNER</span>
+        <h2 style="font-size:18px;">MOST PICKED GUARANTEED WINNER</h2>
+        <p class="sub" id="mostPickedGWOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
+      <div class="panel">
+        <span class="tag red">GUARANTEED WINNER</span>
+        <h2 class="red" style="font-size:18px;">MOST WRONG GUARANTEED WINNER</h2>
+        <p class="sub" id="mostWrongGWOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
     </div>
   </div>
 
@@ -91,11 +101,16 @@ loadData().then(({ weeklyTotals, picks, people }) => {
     document.getElementById("kpiWins").textContent = weeklyWinsCount(weeklyTotals, person);
     document.getElementById("kpiBest").textContent = bestWeekScore(weeklyTotals, person);
 
+    function fmt(s) { return s ? `${s.teams.join(", ")} (${s.count})` : "--"; }
+
     const stats = teamPickStats(picks, { person })[person] || {};
-    function fmt(s) { return s ? `${s.team} (${s.count}${s.tie ? " -- tie" : ""})` : "--"; }
     document.getElementById("mostPickedOut").textContent = fmt(stats.picked);
     document.getElementById("mostCorrectOut").textContent = fmt(stats.correct);
     document.getElementById("mostMissedOut").textContent = fmt(stats.incorrect);
+
+    const gwStats = teamPickStats(picks, { person, questionType: "Weekly Winner Prediction" })[person] || {};
+    document.getElementById("mostPickedGWOut").textContent = fmt(gwStats.picked);
+    document.getElementById("mostWrongGWOut").textContent = fmt(gwStats.incorrect);
 
     const { personData, avgData } = weeklyPerformanceSeries(weeklyTotals, weeks, person);
     if (chart) chart.destroy();

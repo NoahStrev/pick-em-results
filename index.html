@@ -64,6 +64,21 @@
       <div class="table-wrap"><table class="pick-log" id="mostMissed"></table></div>
     </div>
   </div>
+
+  <div class="grid grid-2col-even" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">GUARANTEED WINNER</span>
+      <h2>MOST PICKED GUARANTEED WINNER</h2>
+      <p class="sub">Weekly "will win" bonus prediction, by roommate</p>
+      <div class="table-wrap"><table class="pick-log" id="mostPickedGW"></table></div>
+    </div>
+    <div class="panel">
+      <span class="tag red">GUARANTEED WINNER</span>
+      <h2 class="red">MOST WRONG GUARANTEED WINNER</h2>
+      <p class="sub">Weekly "will win" bonus prediction that missed, by roommate</p>
+      <div class="table-wrap"><table class="pick-log" id="mostWrongGW"></table></div>
+    </div>
+  </div>
 </main>
 <footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
 
@@ -170,19 +185,24 @@ loadData().then(({ weeklyTotals, picks, people }) => {
     });
   });
 
-  // Most Picked / Correct / Missed
+  // Most Picked / Correct / Missed (Game Picks)
   const stats = teamPickStats(picks);
-  function renderTable(id, key) {
+  function renderTable(id, statsObj, key) {
     const el = document.getElementById(id);
     el.innerHTML = "<tr><th>Roommate</th><th>Team</th><th>Count</th></tr>" +
       people.map(p => {
-        const s = stats[p]?.[key];
-        return `<tr><td>${p}</td><td>${s ? s.team : "--"}</td><td>${s ? s.count + (s.tie ? " (tie)" : "") : "--"}</td></tr>`;
+        const s = statsObj[p]?.[key];
+        return `<tr><td>${p}</td><td>${s ? s.teams.join(", ") : "--"}</td><td>${s ? s.count : "--"}</td></tr>`;
       }).join("");
   }
-  renderTable("mostPicked", "picked");
-  renderTable("mostCorrect", "correct");
-  renderTable("mostMissed", "incorrect");
+  renderTable("mostPicked", stats, "picked");
+  renderTable("mostCorrect", stats, "correct");
+  renderTable("mostMissed", stats, "incorrect");
+
+  // Most Picked / Wrong Guaranteed Winner (the weekly "will win" bonus prediction)
+  const gwStats = teamPickStats(picks, { questionType: "Weekly Winner Prediction" });
+  renderTable("mostPickedGW", gwStats, "picked");
+  renderTable("mostWrongGW", gwStats, "incorrect");
 });
 </script>
 </body>

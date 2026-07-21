@@ -73,12 +73,11 @@ function teamPickStats(picks, { person = null, questionType = "Game Pick" } = {}
     if (p.result === "Incorrect") bucket.incorrect[p.team] = (bucket.incorrect[p.team] || 0) + 1;
   }
   function topOf(counts) {
-    let best = null, bestCount = -1, tie = false;
-    for (const [team, c] of Object.entries(counts)) {
-      if (c > bestCount) { best = team; bestCount = c; tie = false; }
-      else if (c === bestCount) tie = true;
-    }
-    return best ? { team: best, count: bestCount, tie } : null;
+    const entries = Object.entries(counts);
+    if (!entries.length) return null;
+    const maxCount = Math.max(...entries.map(([, c]) => c));
+    const teams = entries.filter(([, c]) => c === maxCount).map(([t]) => t).sort();
+    return { teams, count: maxCount, tie: teams.length > 1 };
   }
   const out = {};
   for (const [p, b] of Object.entries(byPerson)) {
