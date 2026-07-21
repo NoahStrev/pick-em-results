@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Player Spotlight -- Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>PLAYER SPOTLIGHT</h1>
+    <p>2025-26 Season &middot; Individual Performance Breakdown</p>
+  </div>
+  <nav class="tabs">
+    <a href="index.html">League</a>
+    <a href="player.html" class="active">Player Spotlight</a>
+  </nav>
+</header>
+
+<main>
+  <div class="panel" style="margin-bottom: 20px; display: flex; align-items: center; gap: 16px;">
+    <span class="tag blue" style="margin-bottom: 0;">NAME FILTER</span>
+    <select id="personSelect"></select>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi"><span class="tag">SEASON RANK</span><div class="value" id="kpiRank">--</div></div>
+    <div class="kpi"><span class="tag">SEASON POINTS</span><div class="value" id="kpiPoints">--</div></div>
+    <div class="kpi"><span class="tag green">PICK ACCURACY</span><div class="value" id="kpiAccuracy">--</div></div>
+    <div class="kpi"><span class="tag">WEEKLY WINS</span><div class="value" id="kpiWins">--</div></div>
+    <div class="kpi"><span class="tag">BEST WEEK SCORE</span><div class="value" id="kpiBest">--</div></div>
+  </div>
+
+  <div class="grid grid-2col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">TREND</span>
+      <h2>WEEKLY PERFORMANCE</h2>
+      <p class="sub">Score by week vs. league average, selected roommate</p>
+      <div class="chart-wrap"><canvas id="perfChart"></canvas></div>
+    </div>
+    <div class="grid grid-1col" style="gap: 14px;">
+      <div class="panel">
+        <span class="tag">TEAM PICKS</span>
+        <h2 style="font-size:18px;">MOST PICKED TEAM</h2>
+        <p class="sub" id="mostPickedOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
+      <div class="panel">
+        <span class="tag green">ACCURACY</span>
+        <h2 class="green" style="font-size:18px;">MOST CORRECT PICK</h2>
+        <p class="sub" id="mostCorrectOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
+      <div class="panel">
+        <span class="tag red">ACCURACY</span>
+        <h2 class="red" style="font-size:18px;">MOST MISSED PICK</h2>
+        <p class="sub" id="mostMissedOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">DETAIL</span>
+      <h2>PICK LOG</h2>
+      <p class="sub">Every pick this roommate made, week by week, right or wrong</p>
+      <table class="pick-log" id="pickLog"></table>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+loadData().then(({ weeklyTotals, picks, people }) => {
+  Chart.defaults.color = PALETTE.muted;
+  Chart.defaults.borderColor = "#2B3D5E";
+  Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+
+  const weeks = uniqueWeeksSorted(weeklyTotals);
+  const select = document.getElementById("personSelect");
+  select.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
+
+  let chart = null;
+
+  function render(person) {
+    document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
+    document.getElementById("kpiPoints").textContent = seasonPoints(weeklyTotals, person);
+    const acc = pickAccuracy(picks, person);
+    document.getElementById("kpiAccuracy").textContent = acc === null ? "--" : Math.round(acc * 100) + "%";
+    document.getElementById("kpiWins").textContent = weeklyWinsCount(weeklyTotals, person);
+    document.getElementById("kpiBest").textContent = bestWeekScore(weeklyTotals, person);
+
+    const stats = teamPickStats(picks, { person })[person] || {};
+    function fmt(s) { return s ? `${s.team} (${s.count}${s.tie ? " -- tie" : ""})` : "--"; }
+    document.getElementById("mostPickedOut").textContent = fmt(stats.picked);
+    document.getElementById("mostCorrectOut").textContent = fmt(stats.correct);
+    document.getElementById("mostMissedOut").textContent = fmt(stats.incorrect);
+
+    const { personData, avgData } = weeklyPerformanceSeries(weeklyTotals, weeks, person);
+    if (chart) chart.destroy();
+    chart = new Chart(document.getElementById("perfChart"), {
+      type: "line",
+      data: {
+        labels: weeks,
+        datasets: [
+          { label: person, data: personData, borderColor: PALETTE.gold, backgroundColor: PALETTE.gold, tension: 0.15, pointRadius: 3, borderWidth: 2.5 },
+          { label: "League average", data: avgData, borderColor: PALETTE.muted, backgroundColor: PALETTE.muted, tension: 0.15, pointRadius: 0, borderWidth: 1.5, borderDash: [5, 4] },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } } },
+        scales: {
+          x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+          y: { title: { display: true, text: "Weekly score" } },
+        },
+      },
+    });
+
+    const rows = picks
+      .filter(p => p.person === person)
+      .sort((a, b) => a.weekOrder - b.weekOrder);
+    const logEl = document.getElementById("pickLog");
+    logEl.innerHTML = "<tr><th>Week</th><th>Question</th><th>Team</th><th>Points</th><th>Result</th></tr>" +
+      rows.map(r => {
+        const cls = r.result === "Correct" ? "result-correct" : r.result === "Incorrect" ? "result-incorrect" : "result-ungraded";
+        return `<tr><td>${r.week}</td><td>${r.questionType}</td><td>${r.team}</td><td>${r.pointsEarned}/${r.pointsPossible}</td><td class="${cls}">${r.result}</td></tr>`;
+      }).join("");
+  }
+
+  select.addEventListener("change", () => render(select.value));
+  render(people[0]);
+});
+</script>
+</body>
+</html>

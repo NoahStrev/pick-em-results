@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>ROOMMATE BALL KNOWLEDGE</h1>
+    <p>2025-26 NFL Season &middot; Weekly Pick 'Em Standings</p>
+  </div>
+  <nav class="tabs">
+    <a href="index.html" class="active">League</a>
+    <a href="player.html">Player Spotlight</a>
+  </nav>
+</header>
+
+<main>
+  <div class="grid grid-2col">
+    <div class="panel">
+      <span class="tag">HERO CHART</span>
+      <h2>SEASON STANDINGS</h2>
+      <p class="sub">Cumulative points by week, all roommates</p>
+      <div class="chart-wrap"><canvas id="standingsChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <span class="tag">RANKING</span>
+      <h2>FINAL LEADERBOARD</h2>
+      <p class="sub">Season rank, current standings</p>
+      <div class="chart-wrap"><canvas id="leaderboardChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">WEEKLY</span>
+      <h2>WEEK OVER WEEK</h2>
+      <p class="sub">Weekly score by roommate &mdash; larger square = that week's winner</p>
+      <div id="heatmap" class="heatmap"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-3col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">TEAM PICKS</span>
+      <h2>MOST PICKED TEAM</h2>
+      <p class="sub">By roommate, all season</p>
+      <table class="pick-log" id="mostPicked"></table>
+    </div>
+    <div class="panel">
+      <span class="tag green">ACCURACY</span>
+      <h2 class="green">MOST CORRECT PICK</h2>
+      <p class="sub">Team picked right most often, by roommate</p>
+      <table class="pick-log" id="mostCorrect"></table>
+    </div>
+    <div class="panel">
+      <span class="tag red">ACCURACY</span>
+      <h2 class="red">MOST MISSED PICK</h2>
+      <p class="sub">Team picked wrong most often, by roommate</p>
+      <table class="pick-log" id="mostMissed"></table>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+loadData().then(({ weeklyTotals, picks, people }) => {
+  Chart.defaults.color = PALETTE.muted;
+  Chart.defaults.borderColor = "#2B3D5E";
+  Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+
+  // Season Standings
+  const series = seasonStandingsSeries(weeklyTotals, people);
+  const weeks = uniqueWeeksSorted(weeklyTotals);
+  new Chart(document.getElementById("standingsChart"), {
+    type: "line",
+    data: {
+      labels: weeks,
+      datasets: series.map(s => ({
+        label: s.person,
+        data: s.data,
+        borderColor: PERSON_COLORS[s.person],
+        backgroundColor: PERSON_COLORS[s.person],
+        tension: 0.15,
+        pointRadius: 2,
+        borderWidth: 2,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } } },
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+        y: { title: { display: true, text: "Cumulative points" } },
+      },
+    },
+  });
+
+  // Final Leaderboard
+  const board = finalLeaderboard(weeklyTotals, people);
+  new Chart(document.getElementById("leaderboardChart"), {
+    type: "bar",
+    data: {
+      labels: board.map(r => r.person),
+      datasets: [{ data: board.map(r => r.points), backgroundColor: PALETTE.gold, borderRadius: 6 }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { grid: { display: false } } },
+    },
+  });
+
+  // Week Over Week heatmap
+  const { weeks: wowWeeks, grid, winners } = weekOverWeekGrid(weeklyTotals, people);
+  const heatmapEl = document.getElementById("heatmap");
+  heatmapEl.style.gridTemplateColumns = `120px repeat(${wowWeeks.length}, 1fr)`;
+  heatmapEl.style.gridTemplateRows = `24px repeat(${people.length}, 40px)`;
+
+  heatmapEl.appendChild(document.createElement("div"));
+  for (const w of wowWeeks) {
+    const el = document.createElement("div");
+    el.className = "hlabel col";
+    el.textContent = w.replace("Week ", "W");
+    heatmapEl.appendChild(el);
+  }
+
+  const vmin = 8, vmax = 22;
+  function colorFor(v) {
+    const t = Math.max(0, Math.min(1, (v - vmin) / (vmax - vmin)));
+    const stops = [
+      [28, 43, 72], [91, 74, 38], [242, 184, 77],
+    ];
+    const seg = t < 0.5 ? [stops[0], stops[1], t * 2] : [stops[1], stops[2], (t - 0.5) * 2];
+    const [a, b, tt] = seg;
+    const mix = (i) => Math.round(a[i] + (b[i] - a[i]) * tt);
+    return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+  }
+
+  people.forEach((person, i) => {
+    const label = document.createElement("div");
+    label.className = "hlabel";
+    label.textContent = person;
+    heatmapEl.appendChild(label);
+
+    grid[i].forEach((v, j) => {
+      const cell = document.createElement("div");
+      if (v === null) {
+        cell.className = "hcell dnp";
+        cell.textContent = "DNP";
+        cell.style.background = "#111d33";
+      } else {
+        const isWinner = v === winners[j];
+        cell.className = "hcell";
+        cell.textContent = v;
+        cell.style.background = colorFor(v);
+        cell.style.transform = isWinner ? "scale(1.12)" : "scale(0.82)";
+        cell.style.fontSize = isWinner ? "13px" : "11px";
+        cell.style.zIndex = isWinner ? "1" : "0";
+      }
+      heatmapEl.appendChild(cell);
+    });
+  });
+
+  // Most Picked / Correct / Missed
+  const stats = teamPickStats(picks);
+  function renderTable(id, key) {
+    const el = document.getElementById(id);
+    el.innerHTML = "<tr><th>Roommate</th><th>Team</th><th>Count</th></tr>" +
+      people.map(p => {
+        const s = stats[p]?.[key];
+        return `<tr><td>${p}</td><td>${s ? s.team : "--"}</td><td>${s ? s.count + (s.tie ? " (tie)" : "") : "--"}</td></tr>`;
+      }).join("");
+  }
+  renderTable("mostPicked", "picked");
+  renderTable("mostCorrect", "correct");
+  renderTable("mostMissed", "incorrect");
+});
+</script>
+</body>
+</html>
