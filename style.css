@@ -50,6 +50,20 @@ nav.tabs {
   gap: 8px;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.season-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.season-select-wrap select { min-width: 0; padding: 8px 12px; font-size: 13px; }
+
 nav.tabs a {
   color: var(--muted);
   text-decoration: none;
@@ -323,4 +337,6 @@ footer.credit {
      internal scroll even after wrapping. Checked at 320/390px: closes it
      without visibly cramping anything else at those widths. */
   .panel { padding: 16px 14px 18px; }
+  .header-controls { width: 100%; justify-content: space-between; }
+  .season-select-wrap select { width: auto; }
 }

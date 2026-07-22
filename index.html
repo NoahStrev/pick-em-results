@@ -16,12 +16,18 @@
 <header class="top">
   <div>
     <h1>ROOMMATE BALL KNOWLEDGE</h1>
-    <p>2025-26 NFL Season &middot; Weekly Pick 'Em Standings</p>
+    <p id="seasonSubtitle">NFL Season &middot; Weekly Pick 'Em Standings</p>
   </div>
-  <nav class="tabs">
-    <a href="index.html" class="active">League</a>
-    <a href="player.html">Player Spotlight</a>
-  </nav>
+  <div class="header-controls">
+    <div class="season-select-wrap">
+      <span class="tag blue" style="margin-bottom: 0;">SEASON</span>
+      <select id="seasonSelect" aria-label="Select season"></select>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" class="active" id="navLeague">League</a>
+      <a href="player.html" id="navPlayer">Player Spotlight</a>
+    </nav>
+  </div>
 </header>
 
 <main>
@@ -108,23 +114,26 @@
 
 <script src="data.js"></script>
 <script>
-loadData().then(({ weeklyTotals, picks, people }) => {
-  Chart.defaults.color = PALETTE.muted;
-  Chart.defaults.borderColor = "#2B3D5E";
-  Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+Chart.defaults.color = PALETTE.muted;
+Chart.defaults.borderColor = "#2B3D5E";
+Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
+let standingsChart = null, leaderboardChart = null;
+
+function renderLeague(weeklyTotals, picks, people) {
   // Season Standings
   const series = seasonStandingsSeries(weeklyTotals, people);
   const weeks = uniqueWeeksSorted(weeklyTotals);
-  new Chart(document.getElementById("standingsChart"), {
+  if (standingsChart) standingsChart.destroy();
+  standingsChart = new Chart(document.getElementById("standingsChart"), {
     type: "line",
     data: {
       labels: weeks,
       datasets: series.map(s => ({
         label: s.person,
         data: s.data,
-        borderColor: PERSON_COLORS[s.person],
-        backgroundColor: PERSON_COLORS[s.person],
+        borderColor: PERSON_COLORS[s.person] || PALETTE.gold,
+        backgroundColor: PERSON_COLORS[s.person] || PALETTE.gold,
         tension: 0.15,
         pointRadius: 2,
         borderWidth: 2,
@@ -143,7 +152,8 @@ loadData().then(({ weeklyTotals, picks, people }) => {
 
   // Final Leaderboard
   const board = finalLeaderboard(weeklyTotals, people);
-  new Chart(document.getElementById("leaderboardChart"), {
+  if (leaderboardChart) leaderboardChart.destroy();
+  leaderboardChart = new Chart(document.getElementById("leaderboardChart"), {
     type: "bar",
     data: {
       labels: board.map(r => r.person),
@@ -161,6 +171,7 @@ loadData().then(({ weeklyTotals, picks, people }) => {
   // Week Over Week heatmap
   const { weeks: wowWeeks, grid, winners } = weekOverWeekGrid(weeklyTotals, people);
   const heatmapEl = document.getElementById("heatmap");
+  heatmapEl.innerHTML = "";
   heatmapEl.style.gridTemplateColumns = `120px repeat(${wowWeeks.length}, 1fr)`;
   heatmapEl.style.gridTemplateRows = `24px repeat(${people.length}, 40px)`;
 
@@ -232,7 +243,41 @@ loadData().then(({ weeklyTotals, picks, people }) => {
   const glStats = teamPickStats(picks, { questionType: "Weekly Loser Prediction" });
   renderTable("mostPickedGL", glStats, "picked");
   renderTable("mostWrongGL", glStats, "incorrect");
-});
+}
+
+function setSeasonInURL(season) {
+  const url = new URL(location.href);
+  url.searchParams.set("season", season);
+  history.replaceState(null, "", url);
+}
+
+function updateNavLinks(season) {
+  document.getElementById("navLeague").href = `index.html?season=${season}`;
+  document.getElementById("navPlayer").href = `player.html?season=${season}`;
+}
+
+async function boot() {
+  const { seasons, default: defaultSeason } = await loadSeasons();
+  const seasonSelect = document.getElementById("seasonSelect");
+  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+
+  let season = new URLSearchParams(location.search).get("season");
+  if (!season || !seasons.includes(season)) season = defaultSeason;
+  seasonSelect.value = season;
+
+  async function load(season) {
+    setSeasonInURL(season);
+    updateNavLinks(season);
+    document.getElementById("seasonSubtitle").textContent = `${season} NFL Season · Weekly Pick 'Em Standings`;
+    const { weeklyTotals, picks, people } = await loadData(season);
+    renderLeague(weeklyTotals, picks, people);
+  }
+
+  seasonSelect.addEventListener("change", () => load(seasonSelect.value));
+  load(season);
+}
+
+boot();
 </script>
 </body>
 </html>

@@ -15,10 +15,14 @@ function toObjects({ fields, rows }) {
   return rows.map(row => Object.fromEntries(fields.map((f, i) => [f, row[i]])));
 }
 
-async function loadData() {
+async function loadSeasons() {
+  return fetch("data/seasons.json").then(r => r.json());
+}
+
+async function loadData(season) {
   const [weeklyTotalsRaw, picksRaw] = await Promise.all([
-    fetch("data/weekly_totals.json").then(r => r.json()),
-    fetch("data/picks.json").then(r => r.json()),
+    fetch(`data/${season}/weekly_totals.json`).then(r => r.json()),
+    fetch(`data/${season}/picks.json`).then(r => r.json()),
   ]);
   const weeklyTotals = toObjects(weeklyTotalsRaw);
   const people = [...new Set(weeklyTotals.map(r => r.person))].sort();

@@ -16,12 +16,18 @@
 <header class="top">
   <div>
     <h1>PLAYER SPOTLIGHT</h1>
-    <p>2025-26 Season &middot; Individual Performance Breakdown</p>
+    <p id="seasonSubtitle">Season &middot; Individual Performance Breakdown</p>
   </div>
-  <nav class="tabs">
-    <a href="index.html">League</a>
-    <a href="player.html" class="active">Player Spotlight</a>
-  </nav>
+  <div class="header-controls">
+    <div class="season-select-wrap">
+      <span class="tag blue" style="margin-bottom: 0;">SEASON</span>
+      <select id="seasonSelect" aria-label="Select season"></select>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" id="navLeague">League</a>
+      <a href="player.html" class="active" id="navPlayer">Player Spotlight</a>
+    </nav>
+  </div>
 </header>
 
 <main>
@@ -79,18 +85,15 @@
 
 <script src="data.js"></script>
 <script>
-loadData().then(({ weeklyTotals, picks, people }) => {
-  Chart.defaults.color = PALETTE.muted;
-  Chart.defaults.borderColor = "#2B3D5E";
-  Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+Chart.defaults.color = PALETTE.muted;
+Chart.defaults.borderColor = "#2B3D5E";
+Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
-  const weeks = uniqueWeeksSorted(weeklyTotals);
-  const select = document.getElementById("personSelect");
-  select.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
+const select = document.getElementById("personSelect");
+let chart = null;
+let weeklyTotals, picks, people, weeks;
 
-  let chart = null;
-
-  function render(person) {
+function render(person) {
     document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
     document.getElementById("kpiPoints").textContent = seasonPoints(weeklyTotals, person);
     const acc = pickAccuracy(picks, person);
@@ -144,11 +147,44 @@ loadData().then(({ weeklyTotals, picks, people }) => {
         const cls = r.result === "Correct" ? "result-correct" : r.result === "Incorrect" ? "result-incorrect" : "result-ungraded";
         return `<tr><td>${r.week}</td><td>${r.questionType}</td><td>${r.team}</td><td>${r.pointsEarned}/${r.pointsPossible}</td><td class="${cls}">${r.result}</td></tr>`;
       }).join("");
+}
+
+function setSeasonInURL(season) {
+  const url = new URL(location.href);
+  url.searchParams.set("season", season);
+  history.replaceState(null, "", url);
+}
+
+function updateNavLinks(season) {
+  document.getElementById("navLeague").href = `index.html?season=${season}`;
+  document.getElementById("navPlayer").href = `player.html?season=${season}`;
+}
+
+async function boot() {
+  const { seasons, default: defaultSeason } = await loadSeasons();
+  const seasonSelect = document.getElementById("seasonSelect");
+  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+
+  let season = new URLSearchParams(location.search).get("season");
+  if (!season || !seasons.includes(season)) season = defaultSeason;
+  seasonSelect.value = season;
+
+  async function load(season) {
+    setSeasonInURL(season);
+    updateNavLinks(season);
+    document.getElementById("seasonSubtitle").textContent = `${season} Season · Individual Performance Breakdown`;
+    ({ weeklyTotals, picks, people } = await loadData(season));
+    weeks = uniqueWeeksSorted(weeklyTotals);
+    select.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
+    render(people[0]);
   }
 
+  seasonSelect.addEventListener("change", () => load(seasonSelect.value));
   select.addEventListener("change", () => render(select.value));
-  render(people[0]);
-});
+  load(season);
+}
+
+boot();
 </script>
 </body>
 </html>
