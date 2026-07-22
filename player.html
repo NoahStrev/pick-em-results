@@ -46,41 +46,22 @@
       <div class="chart-wrap"><canvas id="perfChart"></canvas></div>
     </div>
     <div class="grid grid-1col" style="gap: 14px;">
+      <div class="section-label" style="margin: 0 0 -4px;">Game Pick Accuracy</div>
       <div class="panel">
-        <span class="tag">TEAM PICKS</span>
-        <h2 style="font-size:18px;">MOST PICKED TEAM</h2>
-        <p class="sub" id="mostPickedOut" style="font-size:16px; color:var(--text);">--</p>
-      </div>
-      <div class="panel">
-        <span class="tag green">ACCURACY</span>
-        <h2 class="green" style="font-size:18px;">MOST CORRECT PICK</h2>
-        <p class="sub" id="mostCorrectOut" style="font-size:16px; color:var(--text);">--</p>
-      </div>
-      <div class="panel">
-        <span class="tag red">ACCURACY</span>
-        <h2 class="red" style="font-size:18px;">MOST MISSED PICK</h2>
-        <p class="sub" id="mostMissedOut" style="font-size:16px; color:var(--text);">--</p>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-label">Most Picked Team</span><span class="stat-value" id="mostPickedOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Most Correct Pick</span><span class="stat-value green" id="mostCorrectOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Most Missed Pick</span><span class="stat-value red" id="mostMissedOut">--</span></div>
+        </div>
       </div>
       <div class="section-label" style="margin: 6px 0 -4px;">Bonus Predictions</div>
       <div class="panel">
-        <span class="tag">GUARANTEED WINNER</span>
-        <h2 style="font-size:18px;">MOST PICKED GUARANTEED WINNER</h2>
-        <p class="sub" id="mostPickedGWOut" style="font-size:16px; color:var(--text);">--</p>
-      </div>
-      <div class="panel">
-        <span class="tag red">GUARANTEED WINNER</span>
-        <h2 class="red" style="font-size:18px;">MOST WRONG GUARANTEED WINNER</h2>
-        <p class="sub" id="mostWrongGWOut" style="font-size:16px; color:var(--text);">--</p>
-      </div>
-      <div class="panel">
-        <span class="tag">GUARANTEED LOSER</span>
-        <h2 style="font-size:18px;">MOST PICKED GUARANTEED LOSER</h2>
-        <p class="sub" id="mostPickedGLOut" style="font-size:16px; color:var(--text);">--</p>
-      </div>
-      <div class="panel">
-        <span class="tag red">GUARANTEED LOSER</span>
-        <h2 class="red" style="font-size:18px;">MOST WRONG GUARANTEED LOSER</h2>
-        <p class="sub" id="mostWrongGLOut" style="font-size:16px; color:var(--text);">--</p>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Winner</span><span class="stat-value" id="mostPickedGWOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Winner</span><span class="stat-value red" id="mostWrongGWOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Loser</span><span class="stat-value" id="mostPickedGLOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Loser</span><span class="stat-value red" id="mostWrongGLOut">--</span></div>
+        </div>
       </div>
     </div>
   </div>

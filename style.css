@@ -145,6 +145,35 @@ main {
   border-bottom: 1px solid var(--panel-border);
 }
 
+/* lighter-weight than .section-label -- for a sub-grouping inside an
+   already-labeled section (e.g. distinguishing Guaranteed Winner from
+   Guaranteed Loser within the Bonus Predictions section) without
+   competing with the section-level heading */
+.subsection-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* compact label/value rows -- replaces one-full-panel-per-stat (was 139px
+   for a single line like "Bills (18)") with a dense list inside one panel */
+.stat-list { display: flex; flex-direction: column; }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #1c2b48;
+}
+.stat-row:last-child { border-bottom: none; }
+.stat-label { color: var(--muted); font-size: 13px; }
+.stat-value { color: var(--text); font-weight: bold; font-size: 14px; text-align: right; }
+.stat-value.green { color: var(--green); }
+.stat-value.red { color: var(--red); }
+
 select, .select {
   background: var(--panel);
   color: var(--text);
