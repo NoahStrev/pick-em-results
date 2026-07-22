@@ -275,4 +275,11 @@ footer.credit {
   .grid-2col, .grid-2col-even, .grid-3col { grid-template-columns: 1fr; }
   header.top h1 { font-size: 30px; }
   select, .select { min-width: 0; width: 100%; }
+  /* claws back ~16px of horizontal room for the stat-table Team column at
+     the narrowest phone widths (~320px) -- with a nowrap 19-char name
+     ("Anthony Biancalana") plus a wrapped 2-line tied-team list, the
+     default 22px side padding was juuust enough to force an ~10px
+     internal scroll even after wrapping. Checked at 320/390px: closes it
+     without visibly cramping anything else at those widths. */
+  .panel { padding: 16px 14px 18px; }
 }
