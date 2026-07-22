@@ -32,32 +32,45 @@
 </header>
 
 <main>
-  <div class="panel inline-select-wrap" style="margin-bottom: 0;">
-    <span class="tag blue" style="margin-bottom: 0;">SURVEY</span>
-    <select id="surveySelect" aria-label="Select survey"></select>
-  </div>
-
-  <div class="grid grid-1col" style="margin-top: 20px;">
+  <div class="grid grid-2col-even" style="margin-top: 0;">
     <div class="panel">
       <span class="tag">RANKING</span>
-      <h2>LEADERBOARD</h2>
-      <p class="sub">Total score, this survey &mdash; partial credit given on "select all that apply" questions</p>
-      <div class="chart-wrap short"><canvas id="predLeaderboardChart"></canvas></div>
+      <h2>PRESEASON LEADERBOARD</h2>
+      <p class="sub">Total score &mdash; partial credit given on "select all that apply" questions</p>
+      <div class="chart-wrap short"><canvas id="predLeaderboardChart-preseason"></canvas></div>
+    </div>
+    <div class="panel">
+      <span class="tag">RANKING</span>
+      <h2>MIDSEASON LEADERBOARD</h2>
+      <p class="sub">Total score &mdash; partial credit given on "select all that apply" questions</p>
+      <div class="chart-wrap short"><canvas id="predLeaderboardChart-midseason"></canvas></div>
     </div>
   </div>
 
   <div class="section-label">Combined View</div>
-  <div class="grid grid-1col" style="margin-top: 20px;">
+  <div class="legend-row" style="margin-top: 20px;">
+    <span class="legend-item"><span class="legend-swatch result-correct"></span>Correct</span>
+    <span class="legend-item"><span class="legend-swatch result-ungraded"></span>Partial credit</span>
+    <span class="legend-item"><span class="legend-swatch result-incorrect"></span>Incorrect</span>
+  </div>
+
+  <div class="subsection-label">Preseason</div>
+  <div class="grid grid-1col" style="margin-top: 10px;">
     <div class="panel">
       <span class="tag">EVERYONE</span>
       <h2>QUESTION BY QUESTION</h2>
       <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
-      <div class="legend-row">
-        <span class="legend-item"><span class="legend-swatch result-correct"></span>Correct</span>
-        <span class="legend-item"><span class="legend-swatch result-ungraded"></span>Partial credit</span>
-        <span class="legend-item"><span class="legend-swatch result-incorrect"></span>Incorrect</span>
-      </div>
-      <div class="table-wrap"><table class="pick-log" id="predGridTable"></table></div>
+      <div class="table-wrap"><table class="pick-log" id="predGridTable-preseason"></table></div>
+    </div>
+  </div>
+
+  <div class="subsection-label" style="margin-top: 20px;">Midseason</div>
+  <div class="grid grid-1col" style="margin-top: 10px;">
+    <div class="panel">
+      <span class="tag">EVERYONE</span>
+      <h2>QUESTION BY QUESTION</h2>
+      <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
+      <div class="table-wrap"><table class="pick-log" id="predGridTable-midseason"></table></div>
     </div>
   </div>
 
@@ -67,24 +80,45 @@
     <select id="personSelect" aria-label="Select roommate"></select>
   </div>
 
-  <div class="kpi-row" style="margin-top: 20px;">
-    <div class="kpi"><span class="tag">RANK</span><div class="value" id="kpiRank">--</div></div>
-    <div class="kpi"><span class="tag">SCORE</span><div class="value" id="kpiScore">--</div></div>
-    <div class="kpi"><span class="tag green">PERCENTAGE</span><div class="value" id="kpiPct">--</div></div>
+  <div class="subsection-label" style="margin-top: 20px;">Preseason</div>
+  <div class="kpi-row" style="margin-top: 10px;">
+    <div class="kpi"><span class="tag">RANK</span><div class="value" id="kpiRank-preseason">--</div></div>
+    <div class="kpi"><span class="tag">SCORE</span><div class="value" id="kpiScore-preseason">--</div></div>
+    <div class="kpi"><span class="tag green">PERCENTAGE</span><div class="value" id="kpiPct-preseason">--</div></div>
   </div>
-
   <div class="grid grid-2col grid-top" style="margin-top: 20px;">
     <div class="panel">
       <span class="tag">DETAIL</span>
       <h2>ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
-      <div class="table-wrap"><table class="pick-log" id="predAnswerLog"></table></div>
+      <div class="table-wrap"><table class="pick-log" id="predAnswerLog-preseason"></table></div>
     </div>
     <div class="panel">
       <span class="tag blue">BREAKDOWN</span>
       <h2>BY CATEGORY</h2>
       <p class="sub">Score within each question category</p>
-      <div class="stat-list" id="predCategoryBreakdown"></div>
+      <div class="stat-list" id="predCategoryBreakdown-preseason"></div>
+    </div>
+  </div>
+
+  <div class="subsection-label" style="margin-top: 24px;">Midseason</div>
+  <div class="kpi-row" style="margin-top: 10px;">
+    <div class="kpi"><span class="tag">RANK</span><div class="value" id="kpiRank-midseason">--</div></div>
+    <div class="kpi"><span class="tag">SCORE</span><div class="value" id="kpiScore-midseason">--</div></div>
+    <div class="kpi"><span class="tag green">PERCENTAGE</span><div class="value" id="kpiPct-midseason">--</div></div>
+  </div>
+  <div class="grid grid-2col grid-top" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">DETAIL</span>
+      <h2>ANSWER LOG</h2>
+      <p class="sub">Every question this roommate answered, right or wrong</p>
+      <div class="table-wrap"><table class="pick-log" id="predAnswerLog-midseason"></table></div>
+    </div>
+    <div class="panel">
+      <span class="tag blue">BREAKDOWN</span>
+      <h2>BY CATEGORY</h2>
+      <p class="sub">Score within each question category</p>
+      <div class="stat-list" id="predCategoryBreakdown-midseason"></div>
     </div>
   </div>
 </main>
@@ -96,10 +130,10 @@ Chart.defaults.color = PALETTE.muted;
 Chart.defaults.borderColor = "#2B3D5E";
 Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
-const surveySelect = document.getElementById("surveySelect");
 const personSelect = document.getElementById("personSelect");
+const SURVEY_IDS = ["preseason", "midseason"];
 let predictionsData = null;
-let leaderboardChart = null;
+const leaderboardCharts = {};
 
 function scoreClass(score, points) {
   if (score <= 0) return "result-incorrect";
@@ -111,14 +145,14 @@ function fmtAnswer(v) {
   return Array.isArray(v) ? (v.length ? v.join(", ") : "--") : (v || "--");
 }
 
-function currentSurvey() {
-  return predictionsData.surveys.find(s => s.id === surveySelect.value);
+function surveyById(id) {
+  return predictionsData.surveys.find(s => s.id === id);
 }
 
-function renderLeaderboard(survey) {
+function renderLeaderboard(survey, suffix) {
   const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
-  if (leaderboardChart) leaderboardChart.destroy();
-  leaderboardChart = new Chart(document.getElementById("predLeaderboardChart"), {
+  if (leaderboardCharts[suffix]) leaderboardCharts[suffix].destroy();
+  leaderboardCharts[suffix] = new Chart(document.getElementById(`predLeaderboardChart-${suffix}`), {
     type: "bar",
     data: {
       labels: ranked.map(r => r.person),
@@ -157,11 +191,11 @@ function groupByCategory(questions) {
   return groups;
 }
 
-function renderGrid(survey) {
+function renderGrid(survey, suffix) {
   const people = survey.responses.map(r => r.person);
   const byPerson = Object.fromEntries(survey.responses.map(r => [r.person, r]));
   const colspan = people.length + 2;
-  const el = document.getElementById("predGridTable");
+  const el = document.getElementById(`predGridTable-${suffix}`);
   el.innerHTML = "<tr><th>Question</th><th>Correct Answer</th>" +
     people.map(p => `<th>${p}</th>`).join("") + "</tr>" +
     groupByCategory(survey.questions).map(([category, questions]) =>
@@ -178,25 +212,26 @@ function renderGrid(survey) {
     ).join("");
 }
 
-function renderIndividual(survey, person) {
-  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
-  const rank = ranked.findIndex(r => r.person === person) + 1;
-  const resp = survey.responses.find(r => r.person === person);
+function renderIndividual(survey, person, suffix) {
+  const resp = survey ? survey.responses.find(r => r.person === person) : null;
 
   if (!resp) {
-    document.getElementById("kpiRank").textContent = "--";
-    document.getElementById("kpiScore").textContent = "--";
-    document.getElementById("kpiPct").textContent = "--";
-    document.getElementById("predAnswerLog").innerHTML = "<tr><th colspan=\"4\">This roommate didn't take this survey</th></tr>";
-    document.getElementById("predCategoryBreakdown").innerHTML = "";
+    document.getElementById(`kpiRank-${suffix}`).textContent = "--";
+    document.getElementById(`kpiScore-${suffix}`).textContent = "--";
+    document.getElementById(`kpiPct-${suffix}`).textContent = "--";
+    document.getElementById(`predAnswerLog-${suffix}`).innerHTML = "<tr><th colspan=\"4\">This roommate didn't take this survey</th></tr>";
+    document.getElementById(`predCategoryBreakdown-${suffix}`).innerHTML = "";
     return;
   }
 
-  document.getElementById("kpiRank").textContent = "#" + rank;
-  document.getElementById("kpiScore").textContent = `${resp.total} / ${resp.possible}`;
-  document.getElementById("kpiPct").textContent = Math.round((resp.total / resp.possible) * 100) + "%";
+  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
+  const rank = ranked.findIndex(r => r.person === person) + 1;
 
-  const logEl = document.getElementById("predAnswerLog");
+  document.getElementById(`kpiRank-${suffix}`).textContent = "#" + rank;
+  document.getElementById(`kpiScore-${suffix}`).textContent = `${resp.total} / ${resp.possible}`;
+  document.getElementById(`kpiPct-${suffix}`).textContent = Math.round((resp.total / resp.possible) * 100) + "%";
+
+  const logEl = document.getElementById(`predAnswerLog-${suffix}`);
   logEl.innerHTML = "<tr><th>Question</th><th>Answer</th><th>Correct Answer</th><th>Points</th></tr>" +
     survey.questions.map(q => {
       const given = resp.answers[q.id];
@@ -204,7 +239,7 @@ function renderIndividual(survey, person) {
       return `<tr><td>${q.text}</td><td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td><td>${fmtAnswer(q.answer)}</td><td class="${scoreClass(score, q.points)}">${score} / ${q.points}</td></tr>`;
     }).join("");
 
-  const breakdownEl = document.getElementById("predCategoryBreakdown");
+  const breakdownEl = document.getElementById(`predCategoryBreakdown-${suffix}`);
   breakdownEl.innerHTML = groupByCategory(survey.questions).map(([category, questions]) => {
     const earned = questions.reduce((sum, q) => sum + resp.scores[q.id], 0);
     const possible = questions.reduce((sum, q) => sum + q.points, 0);
@@ -214,16 +249,30 @@ function renderIndividual(survey, person) {
   }).join("");
 }
 
-function renderSurvey() {
-  const survey = currentSurvey();
-  const people = survey.responses.map(r => r.person);
+function renderIndividualAll(person) {
+  for (const id of SURVEY_IDS) renderIndividual(surveyById(id), person, id);
+}
+
+function renderAll() {
+  // union of everyone who took either survey, preseason's order first
+  // (the superset in this dataset) then anyone midseason-only adds
+  const people = [];
+  for (const id of SURVEY_IDS) {
+    const survey = surveyById(id);
+    if (!survey) continue;
+    for (const r of survey.responses) if (!people.includes(r.person)) people.push(r.person);
+  }
   const prevPerson = personSelect.value;
   personSelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
   personSelect.value = people.includes(prevPerson) ? prevPerson : people[0];
 
-  renderLeaderboard(survey);
-  renderGrid(survey);
-  renderIndividual(survey, personSelect.value);
+  for (const id of SURVEY_IDS) {
+    const survey = surveyById(id);
+    if (!survey) continue;
+    renderLeaderboard(survey, id);
+    renderGrid(survey, id);
+  }
+  renderIndividualAll(personSelect.value);
 }
 
 function setSeasonInURL(season) {
@@ -253,18 +302,17 @@ async function boot() {
     const res = await fetch(`data/${season}/predictions.json`);
     predictionsData = res.ok ? await res.json() : { surveys: [] };
 
-    surveySelect.innerHTML = predictionsData.surveys.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
     if (predictionsData.surveys.length) {
-      surveySelect.value = predictionsData.surveys[0].id;
-      renderSurvey();
+      renderAll();
     } else {
-      document.getElementById("predGridTable").innerHTML = "<tr><th>No predictions data for this season yet</th></tr>";
+      for (const id of SURVEY_IDS) {
+        document.getElementById(`predGridTable-${id}`).innerHTML = "<tr><th>No predictions data for this season yet</th></tr>";
+      }
     }
   }
 
   seasonSelect.addEventListener("change", () => load(seasonSelect.value));
-  surveySelect.addEventListener("change", renderSurvey);
-  personSelect.addEventListener("change", () => renderIndividual(currentSurvey(), personSelect.value));
+  personSelect.addEventListener("change", () => renderIndividualAll(personSelect.value));
   load(season);
 }
 
