@@ -89,6 +89,7 @@ main {
 .grid-2col-even { grid-template-columns: repeat(2, 1fr); }
 .grid-3col { grid-template-columns: repeat(3, 1fr); }
 .grid-1col { grid-template-columns: 1fr; }
+.grid-top { align-items: start; }
 
 .panel {
   background: var(--panel);
