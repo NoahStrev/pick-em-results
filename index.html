@@ -79,6 +79,21 @@
       <div class="table-wrap"><table class="pick-log stat-table" id="mostWrongGW"></table></div>
     </div>
   </div>
+
+  <div class="grid grid-2col-even" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">GUARANTEED LOSER</span>
+      <h2>MOST PICKED GUARANTEED LOSER</h2>
+      <p class="sub">Weekly "will lose" bonus prediction, by roommate</p>
+      <div class="table-wrap"><table class="pick-log stat-table" id="mostPickedGL"></table></div>
+    </div>
+    <div class="panel">
+      <span class="tag red">GUARANTEED LOSER</span>
+      <h2 class="red">MOST WRONG GUARANTEED LOSER</h2>
+      <p class="sub">Weekly "will lose" bonus prediction that missed, by roommate</p>
+      <div class="table-wrap"><table class="pick-log stat-table" id="mostWrongGL"></table></div>
+    </div>
+  </div>
 </main>
 <footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
 
@@ -203,6 +218,11 @@ loadData().then(({ weeklyTotals, picks, people }) => {
   const gwStats = teamPickStats(picks, { questionType: "Weekly Winner Prediction" });
   renderTable("mostPickedGW", gwStats, "picked");
   renderTable("mostWrongGW", gwStats, "incorrect");
+
+  // Most Picked / Wrong Guaranteed Loser (the weekly "will lose" bonus prediction)
+  const glStats = teamPickStats(picks, { questionType: "Weekly Loser Prediction" });
+  renderTable("mostPickedGL", glStats, "picked");
+  renderTable("mostWrongGL", glStats, "incorrect");
 });
 </script>
 </body>

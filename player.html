@@ -66,6 +66,16 @@
         <h2 class="red" style="font-size:18px;">MOST WRONG GUARANTEED WINNER</h2>
         <p class="sub" id="mostWrongGWOut" style="font-size:16px; color:var(--text);">--</p>
       </div>
+      <div class="panel">
+        <span class="tag">GUARANTEED LOSER</span>
+        <h2 style="font-size:18px;">MOST PICKED GUARANTEED LOSER</h2>
+        <p class="sub" id="mostPickedGLOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
+      <div class="panel">
+        <span class="tag red">GUARANTEED LOSER</span>
+        <h2 class="red" style="font-size:18px;">MOST WRONG GUARANTEED LOSER</h2>
+        <p class="sub" id="mostWrongGLOut" style="font-size:16px; color:var(--text);">--</p>
+      </div>
     </div>
   </div>
 
@@ -111,6 +121,10 @@ loadData().then(({ weeklyTotals, picks, people }) => {
     const gwStats = teamPickStats(picks, { person, questionType: "Weekly Winner Prediction" })[person] || {};
     document.getElementById("mostPickedGWOut").textContent = fmt(gwStats.picked);
     document.getElementById("mostWrongGWOut").textContent = fmt(gwStats.incorrect);
+
+    const glStats = teamPickStats(picks, { person, questionType: "Weekly Loser Prediction" })[person] || {};
+    document.getElementById("mostPickedGLOut").textContent = fmt(glStats.picked);
+    document.getElementById("mostWrongGLOut").textContent = fmt(glStats.incorrect);
 
     const { personData, avgData } = weeklyPerformanceSeries(weeklyTotals, weeks, person);
     if (chart) chart.destroy();
