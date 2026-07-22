@@ -177,6 +177,15 @@ table.pick-log {
   font-size: 13px;
   white-space: nowrap;
 }
+/* the 3-column summary tables (Roommate/Team/Count) can show several
+   tied team names joined together, e.g. "Bengals, Chiefs, Eagles,
+   Packers" -- on a narrow, single-column mobile layout that's wider than
+   the panel, forcing horizontal scroll on a 3-column table just to read
+   a tie. Wrapping the Team cell instead keeps everything visible without
+   scrolling; the Pick Log table (5 columns, benefits from single-line
+   rows) intentionally keeps nowrap and its own horizontal scroll. */
+table.stat-table { white-space: normal; }
+table.stat-table td:first-child { white-space: nowrap; }
 table.pick-log th {
   text-align: left;
   color: var(--muted);
