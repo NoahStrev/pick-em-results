@@ -11,13 +11,17 @@ const PERSON_COLORS = {
   "Noah Streveler": "#D4A5F5",
 };
 
+function toObjects({ fields, rows }) {
+  return rows.map(row => Object.fromEntries(fields.map((f, i) => [f, row[i]])));
+}
+
 async function loadData() {
-  const [weeklyTotals, picks, people] = await Promise.all([
+  const [weeklyTotalsRaw, picksRaw, people] = await Promise.all([
     fetch("data/weekly_totals.json").then(r => r.json()),
     fetch("data/picks.json").then(r => r.json()),
     fetch("data/people.json").then(r => r.json()),
   ]);
-  return { weeklyTotals, picks, people };
+  return { weeklyTotals: toObjects(weeklyTotalsRaw), picks: toObjects(picksRaw), people };
 }
 
 function uniqueWeeksSorted(rows) {
