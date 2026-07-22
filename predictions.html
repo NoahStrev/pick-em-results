@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Predictions -- Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Preseason and midseason NFL/NCAA prediction contest, graded and scored.">
+<meta property="og:title" content="Predictions -- Roommate Ball Knowledge">
+<meta property="og:description" content="Preseason and midseason NFL/NCAA prediction contest, graded and scored.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8F%88</text></svg>">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>PREDICTIONS</h1>
+    <p id="seasonSubtitle">Preseason &amp; Midseason Prediction Contest</p>
+  </div>
+  <div class="header-controls">
+    <div class="season-select-wrap">
+      <span class="tag blue" style="margin-bottom: 0;">SEASON</span>
+      <select id="seasonSelect" aria-label="Select season"></select>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" id="navLeague">League</a>
+      <a href="player.html" id="navPlayer">Player Spotlight</a>
+      <a href="predictions.html" class="active" id="navPredictions">Predictions</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="panel inline-select-wrap" style="margin-bottom: 0;">
+    <span class="tag blue" style="margin-bottom: 0;">SURVEY</span>
+    <select id="surveySelect" aria-label="Select survey"></select>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">RANKING</span>
+      <h2>LEADERBOARD</h2>
+      <p class="sub">Total score, this survey &mdash; partial credit given on "select all that apply" questions</p>
+      <div class="chart-wrap short"><canvas id="predLeaderboardChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-label">Combined View</div>
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">EVERYONE</span>
+      <h2>QUESTION BY QUESTION</h2>
+      <p class="sub">Every question, the correct answer, and how everyone answered</p>
+      <div class="table-wrap"><table class="pick-log" id="predGridTable"></table></div>
+    </div>
+  </div>
+
+  <div class="section-label">Individual View</div>
+  <div class="panel inline-select-wrap" style="margin-top: 20px; margin-bottom: 0;">
+    <span class="tag blue" style="margin-bottom: 0;">NAME FILTER</span>
+    <select id="personSelect" aria-label="Select roommate"></select>
+  </div>
+
+  <div class="kpi-row" style="margin-top: 20px;">
+    <div class="kpi"><span class="tag">RANK</span><div class="value" id="kpiRank">--</div></div>
+    <div class="kpi"><span class="tag">SCORE</span><div class="value" id="kpiScore">--</div></div>
+    <div class="kpi"><span class="tag green">PERCENTAGE</span><div class="value" id="kpiPct">--</div></div>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">DETAIL</span>
+      <h2>ANSWER LOG</h2>
+      <p class="sub">Every question this roommate answered, right or wrong</p>
+      <div class="table-wrap"><table class="pick-log" id="predAnswerLog"></table></div>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+Chart.defaults.color = PALETTE.muted;
+Chart.defaults.borderColor = "#2B3D5E";
+Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+
+const surveySelect = document.getElementById("surveySelect");
+const personSelect = document.getElementById("personSelect");
+let predictionsData = null;
+let leaderboardChart = null;
+
+function scoreClass(score, points) {
+  if (score <= 0) return "result-incorrect";
+  if (score >= points) return "result-correct";
+  return "result-ungraded"; // partial credit -- muted, distinct from full right/wrong
+}
+
+function fmtAnswer(v) {
+  return Array.isArray(v) ? (v.length ? v.join(", ") : "--") : (v || "--");
+}
+
+function currentSurvey() {
+  return predictionsData.surveys.find(s => s.id === surveySelect.value);
+}
+
+function renderLeaderboard(survey) {
+  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
+  if (leaderboardChart) leaderboardChart.destroy();
+  leaderboardChart = new Chart(document.getElementById("predLeaderboardChart"), {
+    type: "bar",
+    data: {
+      labels: ranked.map(r => r.person),
+      datasets: [{
+        data: ranked.map(r => r.total),
+        backgroundColor: PALETTE.gold, borderRadius: 6,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.parsed.x} / ${ranked[ctx.dataIndex].possible}` } },
+      },
+      scales: {
+        x: { suggestedMax: ranked.length ? ranked[0].possible : 1 },
+        y: { grid: { display: false } },
+      },
+    },
+  });
+}
+
+function renderGrid(survey) {
+  const people = survey.responses.map(r => r.person);
+  const byPerson = Object.fromEntries(survey.responses.map(r => [r.person, r]));
+  const el = document.getElementById("predGridTable");
+  el.innerHTML = "<tr><th>Question</th><th>Correct Answer</th>" +
+    people.map(p => `<th>${p}</th>`).join("") + "</tr>" +
+    survey.questions.map(q => {
+      const cells = people.map(p => {
+        const r = byPerson[p];
+        const given = r.answers[q.id];
+        const score = r.scores[q.id];
+        return `<td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td>`;
+      }).join("");
+      return `<tr><td>${q.text}</td><td>${fmtAnswer(q.answer)}</td>${cells}</tr>`;
+    }).join("");
+}
+
+function renderIndividual(survey, person) {
+  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
+  const rank = ranked.findIndex(r => r.person === person) + 1;
+  const resp = survey.responses.find(r => r.person === person);
+
+  if (!resp) {
+    document.getElementById("kpiRank").textContent = "--";
+    document.getElementById("kpiScore").textContent = "--";
+    document.getElementById("kpiPct").textContent = "--";
+    document.getElementById("predAnswerLog").innerHTML = "<tr><th colspan=\"4\">This roommate didn't take this survey</th></tr>";
+    return;
+  }
+
+  document.getElementById("kpiRank").textContent = "#" + rank;
+  document.getElementById("kpiScore").textContent = `${resp.total} / ${resp.possible}`;
+  document.getElementById("kpiPct").textContent = Math.round((resp.total / resp.possible) * 100) + "%";
+
+  const logEl = document.getElementById("predAnswerLog");
+  logEl.innerHTML = "<tr><th>Question</th><th>Answer</th><th>Correct Answer</th><th>Points</th></tr>" +
+    survey.questions.map(q => {
+      const given = resp.answers[q.id];
+      const score = resp.scores[q.id];
+      return `<tr><td>${q.text}</td><td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td><td>${fmtAnswer(q.answer)}</td><td class="${scoreClass(score, q.points)}">${score} / ${q.points}</td></tr>`;
+    }).join("");
+}
+
+function renderSurvey() {
+  const survey = currentSurvey();
+  const people = survey.responses.map(r => r.person);
+  const prevPerson = personSelect.value;
+  personSelect.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
+  personSelect.value = people.includes(prevPerson) ? prevPerson : people[0];
+
+  renderLeaderboard(survey);
+  renderGrid(survey);
+  renderIndividual(survey, personSelect.value);
+}
+
+function setSeasonInURL(season) {
+  const url = new URL(location.href);
+  url.searchParams.set("season", season);
+  history.replaceState(null, "", url);
+}
+
+function updateNavLinks(season) {
+  document.getElementById("navLeague").href = `index.html?season=${season}`;
+  document.getElementById("navPlayer").href = `player.html?season=${season}`;
+  document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
+}
+
+async function boot() {
+  const { seasons, default: defaultSeason } = await loadSeasons();
+  const seasonSelect = document.getElementById("seasonSelect");
+  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+
+  let season = new URLSearchParams(location.search).get("season");
+  if (!season || !seasons.includes(season)) season = defaultSeason;
+  seasonSelect.value = season;
+
+  async function load(season) {
+    setSeasonInURL(season);
+    updateNavLinks(season);
+    const res = await fetch(`data/${season}/predictions.json`);
+    predictionsData = res.ok ? await res.json() : { surveys: [] };
+
+    surveySelect.innerHTML = predictionsData.surveys.map(s => `<option value="${s.id}">${s.label}</option>`).join("");
+    if (predictionsData.surveys.length) {
+      surveySelect.value = predictionsData.surveys[0].id;
+      renderSurvey();
+    } else {
+      document.getElementById("predGridTable").innerHTML = "<tr><th>No predictions data for this season yet</th></tr>";
+    }
+  }
+
+  seasonSelect.addEventListener("change", () => load(seasonSelect.value));
+  surveySelect.addEventListener("change", renderSurvey);
+  personSelect.addEventListener("change", () => renderIndividual(currentSurvey(), personSelect.value));
+  load(season);
+}
+
+boot();
+</script>
+</body>
+</html>
