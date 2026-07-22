@@ -64,6 +64,14 @@ nav.tabs {
 }
 .season-select-wrap select { min-width: 0; padding: 8px 12px; font-size: 13px; }
 
+.inline-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.inline-select-wrap select { min-width: 0; padding: 8px 12px; font-size: 13px; }
+
 nav.tabs a {
   color: var(--muted);
   text-decoration: none;

@@ -72,6 +72,28 @@
     </div>
   </div>
 
+  <div class="grid grid-2col grid-top" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">BETTING</span>
+      <h2>HYPOTHETICAL BETTING</h2>
+      <p class="sub">Running profit/loss if every pick were a real moneyline bet, this roommate only</p>
+      <div class="chart-wrap"><canvas id="bettingChart"></canvas></div>
+    </div>
+    <div class="grid grid-1col" style="gap: 14px;">
+      <div class="inline-select-wrap" style="margin-bottom: 0;">
+        <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
+        <select id="tierSelect" aria-label="Select bet size tier"></select>
+      </div>
+      <div class="panel">
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Bonus Bets P/L</span><span class="stat-value" id="betBonusOut">--</span></div>
+          <div class="stat-row"><span class="stat-label">Season Total</span><span class="stat-value" id="betTotalOut">--</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="grid grid-1col" style="margin-top: 20px;">
     <div class="panel">
       <span class="tag">DETAIL</span>
@@ -90,8 +112,53 @@ Chart.defaults.borderColor = "#2B3D5E";
 Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
 const select = document.getElementById("personSelect");
-let chart = null;
-let weeklyTotals, picks, people, weeks;
+const tierSelect = document.getElementById("tierSelect");
+let chart = null, bettingChart = null;
+let weeklyTotals, picks, people, weeks, games;
+
+function renderBetting(person) {
+  const tier = BET_TIERS[Number(tierSelect.value)];
+  const money = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const cls = n => (n > 0 ? "green" : n < 0 ? "red" : "");
+
+  const units = bettingUnitTotals(games, picks, [person])[person];
+  const gameTotal = units.game * tier.game;
+  const bonusTotal = units.bonus * tier.bonus;
+  const total = gameTotal + bonusTotal;
+
+  const gameEl = document.getElementById("betGameOut");
+  gameEl.textContent = money(gameTotal);
+  gameEl.className = "stat-value " + cls(gameTotal);
+  const bonusEl = document.getElementById("betBonusOut");
+  bonusEl.textContent = money(bonusTotal);
+  bonusEl.className = "stat-value " + cls(bonusTotal);
+  const totalEl = document.getElementById("betTotalOut");
+  totalEl.textContent = money(total);
+  totalEl.className = "stat-value " + cls(total);
+
+  const series = bettingCumulativeSeries(games, picks, weeks, person, tier);
+  if (bettingChart) bettingChart.destroy();
+  bettingChart = new Chart(document.getElementById("bettingChart"), {
+    type: "line",
+    data: {
+      labels: weeks,
+      datasets: [{
+        label: "Cumulative profit/loss", data: series,
+        borderColor: PALETTE.gold, backgroundColor: PALETTE.gold,
+        tension: 0.15, pointRadius: 2, borderWidth: 2.5, fill: false,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+        y: { title: { display: true, text: "Profit / loss ($)" } },
+      },
+    },
+  });
+}
 
 function render(person) {
     document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
@@ -147,6 +214,8 @@ function render(person) {
         const cls = r.result === "Correct" ? "result-correct" : r.result === "Incorrect" ? "result-incorrect" : "result-ungraded";
         return `<tr><td>${r.week}</td><td>${r.questionType}</td><td>${r.team}</td><td>${r.pointsEarned}/${r.pointsPossible}</td><td class="${cls}">${r.result}</td></tr>`;
       }).join("");
+
+    if (games.length) renderBetting(person);
 }
 
 function setSeasonInURL(season) {
@@ -165,6 +234,9 @@ async function boot() {
   const seasonSelect = document.getElementById("seasonSelect");
   seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
 
+  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
+  tierSelect.addEventListener("change", () => { if (games.length) renderBetting(select.value); });
+
   let season = new URLSearchParams(location.search).get("season");
   if (!season || !seasons.includes(season)) season = defaultSeason;
   seasonSelect.value = season;
@@ -173,7 +245,7 @@ async function boot() {
     setSeasonInURL(season);
     updateNavLinks(season);
     document.getElementById("seasonSubtitle").textContent = `${season} Season · Individual Performance Breakdown`;
-    ({ weeklyTotals, picks, people } = await loadData(season));
+    ({ weeklyTotals, picks, people, games } = await loadData(season));
     weeks = uniqueWeeksSorted(weeklyTotals);
     select.innerHTML = people.map(p => `<option value="${p}">${p}</option>`).join("");
     render(people[0]);

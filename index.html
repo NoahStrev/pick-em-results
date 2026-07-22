@@ -109,6 +109,20 @@
       <div class="table-wrap"><table class="pick-log stat-table" id="mostWrongGL"></table></div>
     </div>
   </div>
+
+  <div class="section-label">Hypothetical Betting</div>
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">BETTING</span>
+      <h2>WHAT IF EVERY PICK WAS A BET?</h2>
+      <p class="sub">Real market moneylines mapped to every pick this season &mdash; a flat bet on each Game Pick, a bigger bonus bet on each Guaranteed Winner/Loser pick. Hypothetical money, not the real points standings.</p>
+      <div class="inline-select-wrap">
+        <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
+        <select id="tierSelect" aria-label="Select bet size tier"></select>
+      </div>
+      <div class="table-wrap"><table class="pick-log stat-table" id="bettingTable"></table></div>
+    </div>
+  </div>
 </main>
 <footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
 
@@ -119,8 +133,21 @@ Chart.defaults.borderColor = "#2B3D5E";
 Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
 let standingsChart = null, leaderboardChart = null;
+let currentGames = [], currentPicks = [], currentPeople = [];
 
-function renderLeague(weeklyTotals, picks, people) {
+function renderBettingTable() {
+  const tierSelect = document.getElementById("tierSelect");
+  const tier = BET_TIERS[Number(tierSelect.value)];
+  const rows = bettingLeaderboard(currentGames, currentPicks, currentPeople, tier);
+  const money = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const cls = n => (n > 0 ? "result-correct" : n < 0 ? "result-incorrect" : "");
+  const el = document.getElementById("bettingTable");
+  el.innerHTML = "<tr><th>Roommate</th><th>Game Bets</th><th>Bonus Bets</th><th>Total</th></tr>" +
+    rows.map(r => `<tr><td>${r.person}</td><td class="${cls(r.game)}">${money(r.game)}</td><td class="${cls(r.bonus)}">${money(r.bonus)}</td><td class="${cls(r.total)}"><b>${money(r.total)}</b></td></tr>`).join("");
+}
+
+function renderLeague(weeklyTotals, picks, people, games) {
+  currentGames = games; currentPicks = picks; currentPeople = people;
   // Season Standings
   const series = seasonStandingsSeries(weeklyTotals, people);
   const weeks = uniqueWeeksSorted(weeklyTotals);
@@ -243,6 +270,9 @@ function renderLeague(weeklyTotals, picks, people) {
   const glStats = teamPickStats(picks, { questionType: "Weekly Loser Prediction" });
   renderTable("mostPickedGL", glStats, "picked");
   renderTable("mostWrongGL", glStats, "incorrect");
+
+  // Hypothetical Betting
+  if (games.length) renderBettingTable();
 }
 
 function setSeasonInURL(season) {
@@ -261,6 +291,10 @@ async function boot() {
   const seasonSelect = document.getElementById("seasonSelect");
   seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
 
+  const tierSelect = document.getElementById("tierSelect");
+  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
+  tierSelect.addEventListener("change", () => { if (currentGames.length) renderBettingTable(); });
+
   let season = new URLSearchParams(location.search).get("season");
   if (!season || !seasons.includes(season)) season = defaultSeason;
   seasonSelect.value = season;
@@ -269,8 +303,8 @@ async function boot() {
     setSeasonInURL(season);
     updateNavLinks(season);
     document.getElementById("seasonSubtitle").textContent = `${season} NFL Season · Weekly Pick 'Em Standings`;
-    const { weeklyTotals, picks, people } = await loadData(season);
-    renderLeague(weeklyTotals, picks, people);
+    const { weeklyTotals, picks, people, games } = await loadData(season);
+    renderLeague(weeklyTotals, picks, people, games);
   }
 
   seasonSelect.addEventListener("change", () => load(seasonSelect.value));

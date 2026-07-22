@@ -20,13 +20,15 @@ async function loadSeasons() {
 }
 
 async function loadData(season) {
-  const [weeklyTotalsRaw, picksRaw] = await Promise.all([
+  const [weeklyTotalsRaw, picksRaw, gamesRaw] = await Promise.all([
     fetch(`data/${season}/weekly_totals.json`).then(r => r.json()),
     fetch(`data/${season}/picks.json`).then(r => r.json()),
+    fetch(`data/${season}/games.json`).then(r => (r.ok ? r.json() : null)).catch(() => null),
   ]);
   const weeklyTotals = toObjects(weeklyTotalsRaw);
   const people = [...new Set(weeklyTotals.map(r => r.person))].sort();
-  return { weeklyTotals, picks: toObjects(picksRaw), people };
+  const games = gamesRaw ? toObjects(gamesRaw) : [];
+  return { weeklyTotals, picks: toObjects(picksRaw), people, games };
 }
 
 function uniqueWeeksSorted(rows) {
@@ -140,4 +142,84 @@ function weeklyPerformanceSeries(weeklyTotals, weeks, person) {
     return rows.reduce((sum, r) => sum + r.totalEarned, 0) / rows.length;
   });
   return { personData, avgData };
+}
+
+// -- Hypothetical betting --
+// Every Game Pick is treated as a flat moneyline bet on the picked team.
+// Every Guaranteed Winner/Loser pick is treated as a flat moneyline "bonus" bet --
+// a Guaranteed Loser bet is graded on the *opponent's* moneyline, since betting a
+// team loses is the same wager as betting whoever they're playing wins. A pick on
+// either side of a game that ended in a tie pushes (0 profit) regardless of how
+// the pick 'em survey itself graded it, matching how real sportsbooks settle ties.
+const BET_TIERS = [
+  { label: "$1 game / $5 bonus", game: 1, bonus: 5 },
+  { label: "$10 game / $50 bonus", game: 10, bonus: 50 },
+  { label: "$100 game / $500 bonus", game: 100, bonus: 500 },
+];
+
+function decimalOdds(moneyline) {
+  return moneyline < 0 ? 1 + 100 / Math.abs(moneyline) : 1 + moneyline / 100;
+}
+
+function buildGameLookup(games) {
+  const m = new Map();
+  for (const g of games) {
+    const tie = g.winner === "TIE";
+    m.set(`${g.week}|${g.teamA}`, { own: g.moneylineA, opp: g.moneylineB, tie });
+    m.set(`${g.week}|${g.teamB}`, { own: g.moneylineB, opp: g.moneylineA, tie });
+  }
+  return m;
+}
+
+function pickUnitProfit(lookup, pick) {
+  const entry = lookup.get(`${pick.week}|${pick.team}`);
+  if (!entry || entry.tie) return 0;
+  if (pick.result === "Incorrect") return -1;
+  if (pick.result !== "Correct") return 0; // defensive: no ungraded picks expected
+  const ml = pick.questionType === "Weekly Loser Prediction" ? entry.opp : entry.own;
+  return decimalOdds(ml) - 1;
+}
+
+// Returns { person -> { game: unitProfit, bonus: unitProfit } } summed across the whole season.
+function bettingUnitTotals(games, picks, people) {
+  const lookup = buildGameLookup(games);
+  const out = {};
+  for (const p of people) out[p] = { game: 0, bonus: 0 };
+  for (const pk of picks) {
+    if (!out[pk.person]) continue;
+    const up = pickUnitProfit(lookup, pk);
+    const key = pk.questionType === "Game Pick" ? "game" : "bonus";
+    out[pk.person][key] += up;
+  }
+  return out;
+}
+
+// Season-long profit/loss per person at a given bet-size tier, sorted descending by total.
+function bettingLeaderboard(games, picks, people, tier) {
+  const units = bettingUnitTotals(games, picks, people);
+  return people
+    .map(person => {
+      const gameDollars = units[person].game * tier.game;
+      const bonusDollars = units[person].bonus * tier.bonus;
+      return { person, game: gameDollars, bonus: bonusDollars, total: gameDollars + bonusDollars };
+    })
+    .sort((a, b) => b.total - a.total);
+}
+
+// Cumulative total profit/loss by week for one person at a given tier -- for a running chart.
+function bettingCumulativeSeries(games, picks, weeks, person, tier) {
+  const lookup = buildGameLookup(games);
+  const gameByWeek = new Map(weeks.map(w => [w, 0]));
+  const bonusByWeek = new Map(weeks.map(w => [w, 0]));
+  for (const pk of picks) {
+    if (pk.person !== person) continue;
+    const up = pickUnitProfit(lookup, pk);
+    const map = pk.questionType === "Game Pick" ? gameByWeek : bonusByWeek;
+    if (map.has(pk.week)) map.set(pk.week, map.get(pk.week) + up);
+  }
+  let running = 0;
+  return weeks.map(w => {
+    running += gameByWeek.get(w) * tier.game + bonusByWeek.get(w) * tier.bonus;
+    return running;
+  });
 }
