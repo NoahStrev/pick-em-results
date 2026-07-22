@@ -51,7 +51,12 @@
     <div class="panel">
       <span class="tag">EVERYONE</span>
       <h2>QUESTION BY QUESTION</h2>
-      <p class="sub">Every question, the correct answer, and how everyone answered</p>
+      <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
+      <div class="legend-row">
+        <span class="legend-item"><span class="legend-swatch result-correct"></span>Correct</span>
+        <span class="legend-item"><span class="legend-swatch result-ungraded"></span>Partial credit</span>
+        <span class="legend-item"><span class="legend-swatch result-incorrect"></span>Incorrect</span>
+      </div>
       <div class="table-wrap"><table class="pick-log" id="predGridTable"></table></div>
     </div>
   </div>
@@ -68,12 +73,18 @@
     <div class="kpi"><span class="tag green">PERCENTAGE</span><div class="value" id="kpiPct">--</div></div>
   </div>
 
-  <div class="grid grid-1col" style="margin-top: 20px;">
+  <div class="grid grid-2col grid-top" style="margin-top: 20px;">
     <div class="panel">
       <span class="tag">DETAIL</span>
       <h2>ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
       <div class="table-wrap"><table class="pick-log" id="predAnswerLog"></table></div>
+    </div>
+    <div class="panel">
+      <span class="tag blue">BREAKDOWN</span>
+      <h2>BY CATEGORY</h2>
+      <p class="sub">Score within each question category</p>
+      <div class="stat-list" id="predCategoryBreakdown"></div>
     </div>
   </div>
 </main>
@@ -113,7 +124,7 @@ function renderLeaderboard(survey) {
       labels: ranked.map(r => r.person),
       datasets: [{
         data: ranked.map(r => r.total),
-        backgroundColor: PALETTE.gold, borderRadius: 6,
+        backgroundColor: ranked.map(r => PERSON_COLORS[r.person] || PALETTE.gold), borderRadius: 6,
       }],
     },
     options: {
@@ -132,21 +143,39 @@ function renderLeaderboard(survey) {
   });
 }
 
+// preserves each category's first-appearance order in the question list,
+// rather than alphabetizing -- keeps the grid's flow matching the survey's
+// own question order within each group
+function groupByCategory(questions) {
+  const groups = [];
+  const byName = {};
+  for (const q of questions) {
+    const cat = q.category || "Other";
+    if (!byName[cat]) { byName[cat] = []; groups.push([cat, byName[cat]]); }
+    byName[cat].push(q);
+  }
+  return groups;
+}
+
 function renderGrid(survey) {
   const people = survey.responses.map(r => r.person);
   const byPerson = Object.fromEntries(survey.responses.map(r => [r.person, r]));
+  const colspan = people.length + 2;
   const el = document.getElementById("predGridTable");
   el.innerHTML = "<tr><th>Question</th><th>Correct Answer</th>" +
     people.map(p => `<th>${p}</th>`).join("") + "</tr>" +
-    survey.questions.map(q => {
-      const cells = people.map(p => {
-        const r = byPerson[p];
-        const given = r.answers[q.id];
-        const score = r.scores[q.id];
-        return `<td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td>`;
-      }).join("");
-      return `<tr><td>${q.text}</td><td>${fmtAnswer(q.answer)}</td>${cells}</tr>`;
-    }).join("");
+    groupByCategory(survey.questions).map(([category, questions]) =>
+      `<tr class="category-row"><td colspan="${colspan}">${category}</td></tr>` +
+      questions.map(q => {
+        const cells = people.map(p => {
+          const r = byPerson[p];
+          const given = r.answers[q.id];
+          const score = r.scores[q.id];
+          return `<td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td>`;
+        }).join("");
+        return `<tr><td>${q.text}</td><td>${fmtAnswer(q.answer)}</td>${cells}</tr>`;
+      }).join("")
+    ).join("");
 }
 
 function renderIndividual(survey, person) {
@@ -159,6 +188,7 @@ function renderIndividual(survey, person) {
     document.getElementById("kpiScore").textContent = "--";
     document.getElementById("kpiPct").textContent = "--";
     document.getElementById("predAnswerLog").innerHTML = "<tr><th colspan=\"4\">This roommate didn't take this survey</th></tr>";
+    document.getElementById("predCategoryBreakdown").innerHTML = "";
     return;
   }
 
@@ -173,6 +203,15 @@ function renderIndividual(survey, person) {
       const score = resp.scores[q.id];
       return `<tr><td>${q.text}</td><td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td><td>${fmtAnswer(q.answer)}</td><td class="${scoreClass(score, q.points)}">${score} / ${q.points}</td></tr>`;
     }).join("");
+
+  const breakdownEl = document.getElementById("predCategoryBreakdown");
+  breakdownEl.innerHTML = groupByCategory(survey.questions).map(([category, questions]) => {
+    const earned = questions.reduce((sum, q) => sum + resp.scores[q.id], 0);
+    const possible = questions.reduce((sum, q) => sum + q.points, 0);
+    const pct = Math.round((earned / possible) * 100);
+    const cls = pct >= 50 ? "green" : pct === 0 ? "red" : "";
+    return `<div class="stat-row"><span class="stat-label">${category}</span><span class="stat-value ${cls}">${earned} / ${possible}</span></div>`;
+  }).join("");
 }
 
 function renderSurvey() {

@@ -265,6 +265,43 @@ table.pick-log tr:hover td { background: #1a2947; }
 .result-incorrect { color: var(--red); font-weight: bold; }
 .result-ungraded { color: var(--muted); }
 
+/* category divider rows inside a combined grid table (e.g. Predictions'
+   question-by-question grid) -- a full-width label row between groups of
+   questions, distinct from a real data row so it shouldn't hover-highlight */
+tr.category-row td {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 16px 8px 6px;
+  border-bottom: 1px solid var(--panel-border);
+}
+tr.category-row:hover td { background: transparent; }
+
+.legend-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 0 0 14px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legend-swatch.result-correct { background: var(--green); }
+.legend-swatch.result-incorrect { background: var(--red); }
+.legend-swatch.result-ungraded { background: var(--muted); }
+
 /* Week Over Week heatmap */
 .heatmap {
   display: grid;

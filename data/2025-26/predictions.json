@@ -9,14 +9,16 @@
      "text": "What is the Packer's record going to be this year?",
      "type": "text",
      "points": 1,
-     "answer": "9-7-1"
+     "answer": "9-7-1",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "bears_record",
      "text": "What is the Bears' record going to be this year?",
      "type": "text",
      "points": 1,
-     "answer": "11-6"
+     "answer": "11-6",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "best_nfc_north",
@@ -25,7 +27,8 @@
      "points": 1,
      "answer": [
       "Bears"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "worst_nfc_north",
@@ -34,7 +37,8 @@
      "points": 1,
      "answer": [
       "Lions"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "best_nfc",
@@ -43,7 +47,8 @@
      "points": 1,
      "answer": [
       "Seahawks"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "worst_nfc",
@@ -52,14 +57,16 @@
      "points": 1,
      "answer": [
       "Cardinals"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_champ",
      "text": "Who is going to win the NFC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "worst_afc",
@@ -70,7 +77,8 @@
       "Raiders",
       "Jets",
       "Titans"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "best_afc",
@@ -80,161 +88,184 @@
      "answer": [
       "Broncos",
       "Patriots"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_champ",
      "text": "Who is going to win the AFC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Patriots"
+     "answer": "Patriots",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "super_bowl_champ",
      "text": "Who is going to win the Super Bowl this year?",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "super_bowl_mvp",
      "text": "Who is going to win Super Bowl MVP this year?",
      "type": "text",
      "points": 1,
-     "answer": "Kenneth Walker III"
+     "answer": "Kenneth Walker III",
+     "category": "Individual Awards"
     },
     {
      "id": "mvp",
      "text": "Who is going to win NFL MVP this year?",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Individual Awards"
     },
     {
      "id": "oroy",
      "text": "Who is going to win NFL Rookie of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Tetairoa McMillan"
+     "answer": "Tetairoa McMillan",
+     "category": "Individual Awards"
     },
     {
      "id": "dpoy",
      "text": "Who is going to win NFL Defensive Player of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Myles Garrett"
+     "answer": "Myles Garrett",
+     "category": "Individual Awards"
     },
     {
      "id": "opoy",
      "text": "Who is going to win NFL Offensive Player of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Jaxon Smith-Njigba"
+     "answer": "Jaxon Smith-Njigba",
+     "category": "Individual Awards"
     },
     {
      "id": "coy",
      "text": "Who is going to win NFL Coach of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Mike Vrabel"
+     "answer": "Mike Vrabel",
+     "category": "Individual Awards"
     },
     {
      "id": "protector_poy",
      "text": "Who is going to win NFL Protector of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Joe Thuney"
+     "answer": "Joe Thuney",
+     "category": "Individual Awards"
     },
     {
      "id": "comeback_poy",
      "text": "Who is going to win NFL Comeback Player of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Christian McCaffrey"
+     "answer": "Christian McCaffrey",
+     "category": "Individual Awards"
     },
     {
      "id": "droy",
      "text": "Who is going to win NFL Defensive Rookie of the year?",
      "type": "text",
      "points": 1,
-     "answer": "Carson Schwesinger"
+     "answer": "Carson Schwesinger",
+     "category": "Individual Awards"
     },
     {
      "id": "passing_yards_leader",
      "text": "Who is going to lead the NFL in Passing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Stat Leaders"
     },
     {
      "id": "passing_td_leader",
      "text": "Who is going to lead the NFL in Passing Touchdowns?",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Stat Leaders"
     },
     {
      "id": "int_leader",
      "text": "Who is going to lead the NFL in Interceptions thrown?",
      "type": "text",
      "points": 1,
-     "answer": "Geno Smith"
+     "answer": "Geno Smith",
+     "category": "Stat Leaders"
     },
     {
      "id": "receiving_yards_leader",
      "text": "Who is going to lead the NFL in Receiving Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jaxon Smith-Njigba"
+     "answer": "Jaxon Smith-Njigba",
+     "category": "Stat Leaders"
     },
     {
      "id": "rushing_yards_leader",
      "text": "Who is going to lead the NFL in Rushing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jonathan Taylor"
+     "answer": "Jonathan Taylor",
+     "category": "Stat Leaders"
     },
     {
      "id": "big_ten_champ",
      "text": "Who is going to win the Big 10 Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Indiana"
+     "answer": "Indiana",
+     "category": "NCAA"
     },
     {
      "id": "sec_champ",
      "text": "Who is going to win the SEC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Georgia"
+     "answer": "Georgia",
+     "category": "NCAA"
     },
     {
      "id": "acc_champ",
      "text": "Who is going to win the ACC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Duke"
+     "answer": "Duke",
+     "category": "NCAA"
     },
     {
      "id": "big12_champ",
      "text": "Who is going to win the Big 12 Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Texas Tech"
+     "answer": "Texas Tech",
+     "category": "NCAA"
     },
     {
      "id": "heisman",
      "text": "Who is going to win the Heisman?",
      "type": "text",
      "points": 1,
-     "answer": "Fernando Mendoza"
+     "answer": "Fernando Mendoza",
+     "category": "NCAA"
     },
     {
      "id": "cfb_champ",
      "text": "Who is going to win the College Football Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Indiana"
+     "answer": "Indiana",
+     "category": "NCAA"
     },
     {
      "id": "carroll_wins",
@@ -245,14 +276,16 @@
       "Milikin",
       "North Park",
       "Elmhurst"
-     ]
+     ],
+     "category": "Carroll Football"
     },
     {
      "id": "carroll_qb1",
      "text": "Who is going to be QB1 going into Week 1 for Carroll?",
      "type": "text",
      "points": 1,
-     "answer": "Charlie King"
+     "answer": "Charlie King",
+     "category": "Carroll Football"
     },
     {
      "id": "carroll_all_conference",
@@ -261,7 +294,8 @@
      "points": 1,
      "answer": [
       "Max Katsenos"
-     ]
+     ],
+     "category": "Carroll Football"
     }
    ],
    "responses": [
@@ -710,70 +744,80 @@
      "text": "What will the Packers record be?",
      "type": "text",
      "points": 1,
-     "answer": "9-7-1"
+     "answer": "9-7-1",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "bears_record",
      "text": "What will the Bears record be?",
      "type": "text",
      "points": 1,
-     "answer": "11-6"
+     "answer": "11-6",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_north_winner",
      "text": "NFC North Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Bears"
+     "answer": "Bears",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_south_winner",
      "text": "NFC South Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Panthers"
+     "answer": "Panthers",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_east_winner",
      "text": "NFC East Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Eagles"
+     "answer": "Eagles",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_west_winner",
      "text": "NFC West Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_north_winner",
      "text": "AFC North Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Steelers"
+     "answer": "Steelers",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_south_winner",
      "text": "AFC South Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Jaguars"
+     "answer": "Jaguars",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_east_winner",
      "text": "AFC East Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Patriots"
+     "answer": "Patriots",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_west_winner",
      "text": "AFC West Division Winner",
      "type": "text",
      "points": 1,
-     "answer": "Broncos"
+     "answer": "Broncos",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_playoff_teams",
@@ -788,7 +832,8 @@
       "Rams",
       "Niners",
       "Packers"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_playoff_teams",
@@ -803,175 +848,200 @@
       "Texans",
       "Bills",
       "Chargers"
-     ]
+     ],
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_1_seed",
      "text": "NFC 1 Seed",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_1_seed",
      "text": "AFC 1 Seed",
      "type": "text",
      "points": 1,
-     "answer": "Broncos"
+     "answer": "Broncos",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "nfc_champ",
      "text": "NFC Champion",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "afc_champ",
      "text": "AFC Champion",
      "type": "text",
      "points": 1,
-     "answer": "Patriots"
+     "answer": "Patriots",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "super_bowl_champ",
      "text": "Super Bowl Champion",
      "type": "text",
      "points": 1,
-     "answer": "Seahawks"
+     "answer": "Seahawks",
+     "category": "Team & Playoff Predictions"
     },
     {
      "id": "mvp",
      "text": "Most Valuable Player",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Individual Awards"
     },
     {
      "id": "opoy",
      "text": "Offensive Player Of The Year",
      "type": "text",
      "points": 1,
-     "answer": "Jaxon Smith-Njigba"
+     "answer": "Jaxon Smith-Njigba",
+     "category": "Individual Awards"
     },
     {
      "id": "dpoy",
      "text": "Defensive Player Of The Year",
      "type": "text",
      "points": 1,
-     "answer": "Myles Garrett"
+     "answer": "Myles Garrett",
+     "category": "Individual Awards"
     },
     {
      "id": "oroy",
      "text": "Offensive Rookie of the Year",
      "type": "text",
      "points": 1,
-     "answer": "Tetairoa McMillan"
+     "answer": "Tetairoa McMillan",
+     "category": "Individual Awards"
     },
     {
      "id": "droy",
      "text": "Defensive Rookie of the Year",
      "type": "text",
      "points": 1,
-     "answer": "Carson Schwesinger"
+     "answer": "Carson Schwesinger",
+     "category": "Individual Awards"
     },
     {
      "id": "coy",
      "text": "Coach Of The Year",
      "type": "text",
      "points": 1,
-     "answer": "Mike Vrabel"
+     "answer": "Mike Vrabel",
+     "category": "Individual Awards"
     },
     {
      "id": "comeback_poy",
      "text": "Comeback Player of the Year",
      "type": "text",
      "points": 1,
-     "answer": "Christian McCaffrey"
+     "answer": "Christian McCaffrey",
+     "category": "Individual Awards"
     },
     {
      "id": "protector_poy",
      "text": "Protector of the Year",
      "type": "text",
      "points": 1,
-     "answer": "Joe Thuney"
+     "answer": "Joe Thuney",
+     "category": "Individual Awards"
     },
     {
      "id": "passing_yards_leader",
      "text": "Who is going to lead the NFL in Passing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Stat Leaders"
     },
     {
      "id": "passing_td_leader",
      "text": "Who is going to lead the NFL in Passing Touchdowns?",
      "type": "text",
      "points": 1,
-     "answer": "Matthew Stafford"
+     "answer": "Matthew Stafford",
+     "category": "Stat Leaders"
     },
     {
      "id": "int_leader",
      "text": "Who is going to lead the NFL in Interceptions thrown?",
      "type": "text",
      "points": 1,
-     "answer": "Geno Smith"
+     "answer": "Geno Smith",
+     "category": "Stat Leaders"
     },
     {
      "id": "receiving_yards_leader",
      "text": "Who is going to lead the NFL in Receiving Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jaxon Smith-Njigba"
+     "answer": "Jaxon Smith-Njigba",
+     "category": "Stat Leaders"
     },
     {
      "id": "rushing_yards_leader",
      "text": "Who is going to lead the NFL in Rushing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jonathan Taylor"
+     "answer": "Jonathan Taylor",
+     "category": "Stat Leaders"
     },
     {
      "id": "big_ten_champ",
      "text": "Who is going to win the Big 10 Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Indiana"
+     "answer": "Indiana",
+     "category": "NCAA"
     },
     {
      "id": "sec_champ",
      "text": "Who is going to win the SEC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Georgia"
+     "answer": "Georgia",
+     "category": "NCAA"
     },
     {
      "id": "acc_champ",
      "text": "Who is going to win the ACC Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Duke"
+     "answer": "Duke",
+     "category": "NCAA"
     },
     {
      "id": "big12_champ",
      "text": "Who is going to win the Big 12 Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Texas Tech"
+     "answer": "Texas Tech",
+     "category": "NCAA"
     },
     {
      "id": "heisman",
      "text": "Who is going to win the Heisman?",
      "type": "text",
      "points": 1,
-     "answer": "Fernando Mendoza"
+     "answer": "Fernando Mendoza",
+     "category": "NCAA"
     },
     {
      "id": "cfb_champ",
      "text": "Who is going to win the College Football Championship?",
      "type": "text",
      "points": 1,
-     "answer": "Indiana"
+     "answer": "Indiana",
+     "category": "NCAA"
     }
    ],
    "responses": [
