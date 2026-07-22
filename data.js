@@ -16,12 +16,13 @@ function toObjects({ fields, rows }) {
 }
 
 async function loadData() {
-  const [weeklyTotalsRaw, picksRaw, people] = await Promise.all([
+  const [weeklyTotalsRaw, picksRaw] = await Promise.all([
     fetch("data/weekly_totals.json").then(r => r.json()),
     fetch("data/picks.json").then(r => r.json()),
-    fetch("data/people.json").then(r => r.json()),
   ]);
-  return { weeklyTotals: toObjects(weeklyTotalsRaw), picks: toObjects(picksRaw), people };
+  const weeklyTotals = toObjects(weeklyTotalsRaw);
+  const people = [...new Set(weeklyTotals.map(r => r.person))].sort();
+  return { weeklyTotals, picks: toObjects(picksRaw), people };
 }
 
 function uniqueWeeksSorted(rows) {
