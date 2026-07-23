@@ -200,6 +200,10 @@ const BET_TIERS = [
   { label: "$100 game / $500 bonus", game: 100, bonus: 500 },
 ];
 
+function formatMoney(n) {
+  return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 function decimalOdds(moneyline) {
   return moneyline < 0 ? 1 + 100 / Math.abs(moneyline) : 1 + moneyline / 100;
 }

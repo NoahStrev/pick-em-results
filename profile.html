@@ -44,7 +44,7 @@
       <span class="tag">CAREER</span>
       <h2>ALL-TIME TOTALS</h2>
       <p class="sub">Summed across every season on record</p>
-      <div class="stat-list">
+      <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Total Points</span><span class="stat-value" id="careerPointsOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Weekly Wins</span><span class="stat-value" id="careerWinsOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Seasons Played</span><span class="stat-value" id="careerSeasonsOut">--</span></div>
@@ -54,12 +54,12 @@
       <span class="tag blue">HISTORY</span>
       <h2>SEASON BY SEASON</h2>
       <p class="sub">Final rank and points, per season</p>
-      <div class="stat-list" id="seasonHistoryOut"></div>
+      <div class="stat-list" id="seasonHistoryOut" aria-live="polite"></div>
     </div>
   </div>
 
   <div class="section-label" id="thisSeasonLabel" style="margin-top: 36px;">This Season</div>
-  <div class="kpi-row" style="margin-top: 20px;">
+  <div class="kpi-row" style="margin-top: 20px;" aria-live="polite">
     <div class="kpi"><span class="tag">SEASON RANK</span><div class="value" id="kpiRank">--</div></div>
     <div class="kpi"><span class="tag">SEASON POINTS</span><div class="value" id="kpiPoints">--</div></div>
     <div class="kpi"><span class="tag green">PICK ACCURACY</span><div class="value" id="kpiAccuracy">--</div></div>
@@ -72,7 +72,7 @@
       <span class="tag">TEAM PICKS</span>
       <h2>GAME PICK ACCURACY</h2>
       <p class="sub">This season</p>
-      <div class="stat-list">
+      <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Most Picked Team</span><span class="stat-value" id="mostPickedOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Most Correct Pick</span><span class="stat-value green" id="mostCorrectOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Most Missed Pick</span><span class="stat-value red" id="mostMissedOut">--</span></div>
@@ -82,7 +82,7 @@
       <span class="tag">BONUS</span>
       <h2>BONUS PREDICTIONS</h2>
       <p class="sub">This season</p>
-      <div class="stat-list">
+      <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Winner</span><span class="stat-value" id="mostPickedGWOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Winner</span><span class="stat-value red" id="mostWrongGWOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Loser</span><span class="stat-value" id="mostPickedGLOut">--</span></div>
@@ -101,7 +101,7 @@
       <span class="tag">BETTING</span>
       <h2>THIS SEASON'S P/L</h2>
       <p class="sub">If every pick were a real moneyline bet, this season only</p>
-      <div class="stat-list">
+      <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Bonus Bets P/L</span><span class="stat-value" id="betBonusOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Season Total</span><span class="stat-value" id="betTotalOut">--</span></div>
@@ -115,7 +115,7 @@
       <span class="tag">PRESEASON</span>
       <h2>PRESEASON CONTEST</h2>
       <p class="sub">Rank and score, if this roommate took it</p>
-      <div class="kpi-row">
+      <div class="kpi-row" aria-live="polite">
         <div class="kpi"><span class="tag">RANK</span><div class="value small" id="predRank-preseason">--</div></div>
         <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-preseason">--</div></div>
         <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-preseason">--</div></div>
@@ -125,7 +125,7 @@
       <span class="tag">MIDSEASON</span>
       <h2>MIDSEASON CONTEST</h2>
       <p class="sub">Rank and score, if this roommate took it</p>
-      <div class="kpi-row">
+      <div class="kpi-row" aria-live="polite">
         <div class="kpi"><span class="tag">RANK</span><div class="value small" id="predRank-midseason">--</div></div>
         <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-midseason">--</div></div>
         <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-midseason">--</div></div>
@@ -145,7 +145,7 @@ const SURVEY_IDS = ["preseason", "midseason"];
 let weeklyTotals, picks, people, games, careerRows;
 
 function fmtTeamStat(s) { return s ? `${s.teams.join(", ")} (${s.count})` : "--"; }
-function money(n) { return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+const money = formatMoney;
 function moneyCls(n) { return n > 0 ? "green" : n < 0 ? "red" : ""; }
 
 function renderCareer(person) {

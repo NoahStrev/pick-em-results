@@ -142,7 +142,7 @@ function renderBettingTable() {
   const tierSelect = document.getElementById("tierSelect");
   const tier = BET_TIERS[Number(tierSelect.value)];
   const rows = bettingLeaderboard(currentGames, currentPicks, currentPeople, tier);
-  const money = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = formatMoney;
   const cls = n => (n > 0 ? "result-correct" : n < 0 ? "result-incorrect" : "");
   const el = document.getElementById("bettingTable");
   el.innerHTML = "<tr><th>Roommate</th><th>Game Bets</th><th>Bonus Bets</th><th>Total</th></tr>" +

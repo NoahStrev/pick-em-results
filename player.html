@@ -39,7 +39,7 @@
     <select id="personSelect" aria-label="Select roommate"></select>
   </div>
 
-  <div class="kpi-row">
+  <div class="kpi-row" aria-live="polite">
     <div class="kpi"><span class="tag">SEASON RANK</span><div class="value" id="kpiRank">--</div></div>
     <div class="kpi"><span class="tag">SEASON POINTS</span><div class="value" id="kpiPoints">--</div></div>
     <div class="kpi"><span class="tag green">PICK ACCURACY</span><div class="value" id="kpiAccuracy">--</div></div>
@@ -57,7 +57,7 @@
     <div class="grid grid-1col" style="gap: 14px;">
       <div class="section-label" style="margin: 0 0 -4px;">Game Pick Accuracy</div>
       <div class="panel">
-        <div class="stat-list">
+        <div class="stat-list" aria-live="polite">
           <div class="stat-row"><span class="stat-label">Most Picked Team</span><span class="stat-value" id="mostPickedOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Most Correct Pick</span><span class="stat-value green" id="mostCorrectOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Most Missed Pick</span><span class="stat-value red" id="mostMissedOut">--</span></div>
@@ -65,7 +65,7 @@
       </div>
       <div class="section-label" style="margin: 6px 0 -4px;">Bonus Predictions</div>
       <div class="panel">
-        <div class="stat-list">
+        <div class="stat-list" aria-live="polite">
           <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Winner</span><span class="stat-value" id="mostPickedGWOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Winner</span><span class="stat-value red" id="mostWrongGWOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Loser</span><span class="stat-value" id="mostPickedGLOut">--</span></div>
@@ -88,7 +88,7 @@
         <select id="tierSelect" aria-label="Select bet size tier"></select>
       </div>
       <div class="panel">
-        <div class="stat-list">
+        <div class="stat-list" aria-live="polite">
           <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Bonus Bets P/L</span><span class="stat-value" id="betBonusOut">--</span></div>
           <div class="stat-row"><span class="stat-label">Season Total</span><span class="stat-value" id="betTotalOut">--</span></div>
@@ -121,7 +121,7 @@ let weeklyTotals, picks, people, weeks, games;
 
 function renderBetting(person) {
   const tier = BET_TIERS[Number(tierSelect.value)];
-  const money = n => (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const money = formatMoney;
   const cls = n => (n > 0 ? "green" : n < 0 ? "red" : "");
 
   const units = bettingUnitTotals(games, picks, [person])[person];
