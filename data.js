@@ -1,5 +1,5 @@
 const PALETTE = {
-  navy: "#0A1424", panel: "#15213A", gold: "#F2B84D", goldDim: "#A6803C",
+  navy: "#0A1424", panel: "#15213A", gold: "#F2B84D",
   green: "#3DD68C", red: "#F06B70", blue: "#6C9BF5", text: "#F0F2F7", muted: "#92A0B5",
 };
 

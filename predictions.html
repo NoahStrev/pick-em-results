@@ -96,7 +96,7 @@
       <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-preseason"></table></div>
     </div>
     <div class="panel">
-      <span class="tag blue">BREAKDOWN</span>
+      <span class="tag">BREAKDOWN</span>
       <h2>BY CATEGORY</h2>
       <p class="sub">Score within each question category</p>
       <div class="stat-list" id="predCategoryBreakdown-preseason" aria-live="polite"></div>
@@ -117,7 +117,7 @@
       <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-midseason"></table></div>
     </div>
     <div class="panel">
-      <span class="tag blue">BREAKDOWN</span>
+      <span class="tag">BREAKDOWN</span>
       <h2>BY CATEGORY</h2>
       <p class="sub">Score within each question category</p>
       <div class="stat-list" id="predCategoryBreakdown-midseason" aria-live="polite"></div>
@@ -221,7 +221,7 @@ function renderIndividual(survey, person, suffix) {
     document.getElementById(`kpiRank-${suffix}`).textContent = "--";
     document.getElementById(`kpiScore-${suffix}`).textContent = "--";
     document.getElementById(`kpiPct-${suffix}`).textContent = "--";
-    document.getElementById(`predAnswerLog-${suffix}`).innerHTML = "<tr><th colspan=\"4\">This roommate didn't take this survey</th></tr>";
+    document.getElementById(`predAnswerLog-${suffix}`).innerHTML = "<tr><th colspan=\"4\">DNP &mdash; didn't take this survey</th></tr>";
     document.getElementById(`predCategoryBreakdown-${suffix}`).innerHTML = "";
     return;
   }
