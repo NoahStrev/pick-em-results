@@ -28,6 +28,7 @@
       <a href="player.html" id="navPlayer">Player Spotlight</a>
       <a href="predictions.html" id="navPredictions">Predictions</a>
       <a href="alltime.html" id="navAllTime">All-Time</a>
+      <a href="profile.html" id="navProfile">Profile</a>
     </nav>
   </div>
 </header>
@@ -287,6 +288,7 @@ function updateNavLinks(season) {
   document.getElementById("navLeague").href = `index.html?season=${season}`;
   document.getElementById("navPlayer").href = `player.html?season=${season}`;
   document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
+  document.getElementById("navProfile").href = `profile.html?season=${season}`;
 }
 
 async function boot() {

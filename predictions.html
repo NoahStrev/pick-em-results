@@ -28,6 +28,7 @@
       <a href="player.html" id="navPlayer">Player Spotlight</a>
       <a href="predictions.html" class="active" id="navPredictions">Predictions</a>
       <a href="alltime.html" id="navAllTime">All-Time</a>
+      <a href="profile.html" id="navProfile">Profile</a>
     </nav>
   </div>
 </header>
@@ -214,9 +215,9 @@ function renderGrid(survey, suffix) {
 }
 
 function renderIndividual(survey, person, suffix) {
-  const resp = survey ? survey.responses.find(r => r.person === person) : null;
+  const ranked = survey ? predictionsRank(survey, person) : null;
 
-  if (!resp) {
+  if (!ranked) {
     document.getElementById(`kpiRank-${suffix}`).textContent = "--";
     document.getElementById(`kpiScore-${suffix}`).textContent = "--";
     document.getElementById(`kpiPct-${suffix}`).textContent = "--";
@@ -225,10 +226,9 @@ function renderIndividual(survey, person, suffix) {
     return;
   }
 
-  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
-  const rank = ranked.findIndex(r => r.person === person) + 1;
+  const resp = survey.responses.find(r => r.person === person);
 
-  document.getElementById(`kpiRank-${suffix}`).textContent = "#" + rank;
+  document.getElementById(`kpiRank-${suffix}`).textContent = "#" + ranked.rank;
   document.getElementById(`kpiScore-${suffix}`).textContent = `${resp.total} / ${resp.possible}`;
   document.getElementById(`kpiPct-${suffix}`).textContent = Math.round((resp.total / resp.possible) * 100) + "%";
 
@@ -290,6 +290,7 @@ function updateNavLinks(season) {
   document.getElementById("navLeague").href = `index.html?season=${season}`;
   document.getElementById("navPlayer").href = `player.html?season=${season}`;
   document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
+  document.getElementById("navProfile").href = `profile.html?season=${season}`;
 }
 
 async function boot() {
@@ -304,8 +305,7 @@ async function boot() {
   async function load(season) {
     setSeasonInURL(season);
     updateNavLinks(season);
-    const res = await fetch(`data/${season}/predictions.json`);
-    predictionsData = res.ok ? await res.json() : { surveys: [] };
+    predictionsData = await loadPredictions(season);
 
     if (predictionsData.surveys.length) {
       renderAll();

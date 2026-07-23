@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Profile -- Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Everything about one roommate in one place -- career totals, this season's stats, and predictions performance.">
+<meta property="og:title" content="Profile -- Roommate Ball Knowledge">
+<meta property="og:description" content="Everything about one roommate in one place -- career totals, this season's stats, and predictions performance.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8F%88</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>PROFILE</h1>
+    <p id="seasonSubtitle">Everything About One Roommate, In One Place</p>
+  </div>
+  <div class="header-controls">
+    <div class="season-select-wrap">
+      <span class="tag blue" style="margin-bottom: 0;">SEASON</span>
+      <select id="seasonSelect" aria-label="Select season"></select>
+    </div>
+    <nav class="tabs">
+      <a href="index.html" id="navLeague">League</a>
+      <a href="player.html" id="navPlayer">Player Spotlight</a>
+      <a href="predictions.html" id="navPredictions">Predictions</a>
+      <a href="alltime.html" id="navAllTime">All-Time</a>
+      <a href="profile.html" class="active" id="navProfile">Profile</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="panel inline-select-wrap" style="margin-bottom: 0;">
+    <span class="tag blue" style="margin-bottom: 0;">NAME FILTER</span>
+    <select id="personSelect" aria-label="Select roommate"></select>
+  </div>
+
+  <div class="section-label" style="margin-top: 20px;">Career</div>
+  <div class="grid grid-2col-even" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">CAREER</span>
+      <h2>ALL-TIME TOTALS</h2>
+      <p class="sub">Summed across every season on record</p>
+      <div class="stat-list">
+        <div class="stat-row"><span class="stat-label">Total Points</span><span class="stat-value" id="careerPointsOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Weekly Wins</span><span class="stat-value" id="careerWinsOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Seasons Played</span><span class="stat-value" id="careerSeasonsOut">--</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="tag blue">HISTORY</span>
+      <h2>SEASON BY SEASON</h2>
+      <p class="sub">Final rank and points, per season</p>
+      <div class="stat-list" id="seasonHistoryOut"></div>
+    </div>
+  </div>
+
+  <div class="section-label" id="thisSeasonLabel" style="margin-top: 36px;">This Season</div>
+  <div class="kpi-row" style="margin-top: 20px;">
+    <div class="kpi"><span class="tag">SEASON RANK</span><div class="value" id="kpiRank">--</div></div>
+    <div class="kpi"><span class="tag">SEASON POINTS</span><div class="value" id="kpiPoints">--</div></div>
+    <div class="kpi"><span class="tag green">PICK ACCURACY</span><div class="value" id="kpiAccuracy">--</div></div>
+    <div class="kpi"><span class="tag">WEEKLY WINS</span><div class="value" id="kpiWins">--</div></div>
+    <div class="kpi"><span class="tag">BEST WEEK SCORE</span><div class="value" id="kpiBest">--</div></div>
+  </div>
+
+  <div class="grid grid-2col-even" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">TEAM PICKS</span>
+      <h2>GAME PICK ACCURACY</h2>
+      <p class="sub">This season</p>
+      <div class="stat-list">
+        <div class="stat-row"><span class="stat-label">Most Picked Team</span><span class="stat-value" id="mostPickedOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Most Correct Pick</span><span class="stat-value green" id="mostCorrectOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Most Missed Pick</span><span class="stat-value red" id="mostMissedOut">--</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="tag">BONUS</span>
+      <h2>BONUS PREDICTIONS</h2>
+      <p class="sub">This season</p>
+      <div class="stat-list">
+        <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Winner</span><span class="stat-value" id="mostPickedGWOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Winner</span><span class="stat-value red" id="mostWrongGWOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Most Picked Guaranteed Loser</span><span class="stat-value" id="mostPickedGLOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Most Wrong Guaranteed Loser</span><span class="stat-value red" id="mostWrongGLOut">--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top: 36px;">Hypothetical Betting</div>
+  <div class="panel inline-select-wrap" style="margin-top: 20px; margin-bottom: 0;">
+    <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
+    <select id="tierSelect" aria-label="Select bet size tier"></select>
+  </div>
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">BETTING</span>
+      <h2>THIS SEASON'S P/L</h2>
+      <p class="sub">If every pick were a real moneyline bet, this season only</p>
+      <div class="stat-list">
+        <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Bonus Bets P/L</span><span class="stat-value" id="betBonusOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Season Total</span><span class="stat-value" id="betTotalOut">--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label" id="predictionsLabel" style="margin-top: 36px;">Predictions</div>
+  <div class="grid grid-2col-even" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">PRESEASON</span>
+      <h2>PRESEASON CONTEST</h2>
+      <p class="sub">Rank and score, if this roommate took it</p>
+      <div class="kpi-row">
+        <div class="kpi"><span class="tag">RANK</span><div class="value small" id="predRank-preseason">--</div></div>
+        <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-preseason">--</div></div>
+        <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-preseason">--</div></div>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="tag">MIDSEASON</span>
+      <h2>MIDSEASON CONTEST</h2>
+      <p class="sub">Rank and score, if this roommate took it</p>
+      <div class="kpi-row">
+        <div class="kpi"><span class="tag">RANK</span><div class="value small" id="predRank-midseason">--</div></div>
+        <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-midseason">--</div></div>
+        <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-midseason">--</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+const personSelect = document.getElementById("personSelect");
+const seasonSelect = document.getElementById("seasonSelect");
+const tierSelect = document.getElementById("tierSelect");
+const SURVEY_IDS = ["preseason", "midseason"];
+
+let weeklyTotals, picks, people, games, careerRows;
+
+function fmtTeamStat(s) { return s ? `${s.teams.join(", ")} (${s.count})` : "--"; }
+function money(n) { return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function moneyCls(n) { return n > 0 ? "green" : n < 0 ? "red" : ""; }
+
+function renderCareer(person) {
+  const row = careerRows.find(r => r.person === person);
+  if (!row) {
+    document.getElementById("careerPointsOut").textContent = "--";
+    document.getElementById("careerWinsOut").textContent = "--";
+    document.getElementById("careerSeasonsOut").textContent = "--";
+    document.getElementById("seasonHistoryOut").innerHTML = "";
+    return;
+  }
+  document.getElementById("careerPointsOut").textContent = row.totalPoints;
+  document.getElementById("careerWinsOut").textContent = row.totalWins;
+  document.getElementById("careerSeasonsOut").textContent = row.seasonsPlayed;
+
+  document.getElementById("seasonHistoryOut").innerHTML = row.history.map(h => {
+    const value = h.played ? `#${h.rank} &middot; ${h.points} pts` : "DNP";
+    return `<div class="stat-row"><span class="stat-label">${h.season}</span><span class="stat-value">${value}</span></div>`;
+  }).join("");
+}
+
+function renderBetting(person) {
+  const tier = BET_TIERS[Number(tierSelect.value)];
+  const units = bettingUnitTotals(games, picks, [person])[person];
+  const gameTotal = units.game * tier.game;
+  const bonusTotal = units.bonus * tier.bonus;
+  const total = gameTotal + bonusTotal;
+
+  const gameEl = document.getElementById("betGameOut");
+  gameEl.textContent = money(gameTotal);
+  gameEl.className = "stat-value " + moneyCls(gameTotal);
+  const bonusEl = document.getElementById("betBonusOut");
+  bonusEl.textContent = money(bonusTotal);
+  bonusEl.className = "stat-value " + moneyCls(bonusTotal);
+  const totalEl = document.getElementById("betTotalOut");
+  totalEl.textContent = money(total);
+  totalEl.className = "stat-value " + moneyCls(total);
+}
+
+function renderThisSeason(person) {
+  if (!people.includes(person)) {
+    for (const id of ["kpiRank", "kpiPoints", "kpiAccuracy", "kpiWins", "kpiBest"]) document.getElementById(id).textContent = "--";
+    for (const id of ["mostPickedOut", "mostCorrectOut", "mostMissedOut", "mostPickedGWOut", "mostWrongGWOut", "mostPickedGLOut", "mostWrongGLOut"]) document.getElementById(id).textContent = "--";
+    for (const id of ["betGameOut", "betBonusOut", "betTotalOut"]) { const el = document.getElementById(id); el.textContent = "--"; el.className = "stat-value"; }
+    return;
+  }
+  document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
+  document.getElementById("kpiPoints").textContent = seasonPoints(weeklyTotals, person);
+  const acc = pickAccuracy(picks, person);
+  document.getElementById("kpiAccuracy").textContent = acc === null ? "--" : Math.round(acc * 100) + "%";
+  document.getElementById("kpiWins").textContent = weeklyWinsCount(weeklyTotals, person);
+  document.getElementById("kpiBest").textContent = bestWeekScore(weeklyTotals, person);
+
+  const stats = teamPickStats(picks, { person })[person] || {};
+  document.getElementById("mostPickedOut").textContent = fmtTeamStat(stats.picked);
+  document.getElementById("mostCorrectOut").textContent = fmtTeamStat(stats.correct);
+  document.getElementById("mostMissedOut").textContent = fmtTeamStat(stats.incorrect);
+
+  const gwStats = teamPickStats(picks, { person, questionType: "Weekly Winner Prediction" })[person] || {};
+  document.getElementById("mostPickedGWOut").textContent = fmtTeamStat(gwStats.picked);
+  document.getElementById("mostWrongGWOut").textContent = fmtTeamStat(gwStats.incorrect);
+
+  const glStats = teamPickStats(picks, { person, questionType: "Weekly Loser Prediction" })[person] || {};
+  document.getElementById("mostPickedGLOut").textContent = fmtTeamStat(glStats.picked);
+  document.getElementById("mostWrongGLOut").textContent = fmtTeamStat(glStats.incorrect);
+
+  if (games.length) renderBetting(person);
+}
+
+function renderPredictionsSurvey(survey, person, suffix) {
+  const ranked = survey ? predictionsRank(survey, person) : null;
+  const rankEl = document.getElementById(`predRank-${suffix}`);
+  const scoreEl = document.getElementById(`predScore-${suffix}`);
+  const pctEl = document.getElementById(`predPct-${suffix}`);
+  if (!ranked) {
+    rankEl.textContent = "--"; scoreEl.textContent = "--"; pctEl.textContent = "--";
+    return;
+  }
+  rankEl.textContent = "#" + ranked.rank;
+  scoreEl.textContent = `${ranked.total} / ${ranked.possible}`;
+  pctEl.textContent = Math.round((ranked.total / ranked.possible) * 100) + "%";
+}
+
+function render(person) {
+  renderCareer(person);
+  renderThisSeason(person);
+}
+
+function setSeasonInURL(season) {
+  const url = new URL(location.href);
+  url.searchParams.set("season", season);
+  history.replaceState(null, "", url);
+}
+
+function updateNavLinks(season) {
+  document.getElementById("navLeague").href = `index.html?season=${season}`;
+  document.getElementById("navPlayer").href = `player.html?season=${season}`;
+  document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
+  document.getElementById("navProfile").href = `profile.html?season=${season}`;
+}
+
+async function boot() {
+  const { seasons, default: defaultSeason } = await loadSeasons();
+  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+
+  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
+  tierSelect.addEventListener("change", () => { if (games.length) renderBetting(personSelect.value); });
+
+  const allSeasonsData = await loadAllSeasonsData(seasons);
+  careerRows = careerLeaderboard(allSeasonsData);
+
+  let season = new URLSearchParams(location.search).get("season");
+  if (!season || !seasons.includes(season)) season = defaultSeason;
+  seasonSelect.value = season;
+
+  async function load(season) {
+    setSeasonInURL(season);
+    updateNavLinks(season);
+    document.getElementById("thisSeasonLabel").textContent = `This Season (${season})`;
+    document.getElementById("predictionsLabel").textContent = `Predictions (${season})`;
+
+    const [dataResult, predictionsData] = await Promise.all([loadData(season), loadPredictions(season)]);
+    ({ weeklyTotals, picks, people, games } = dataResult);
+
+    const prevPerson = personSelect.value;
+    const careerPeople = careerRows.map(r => r.person);
+    const allPeople = [...new Set([...careerPeople, ...people])];
+    personSelect.innerHTML = allPeople.map(p => `<option value="${p}">${p}</option>`).join("");
+    personSelect.value = allPeople.includes(prevPerson) ? prevPerson : (people[0] || allPeople[0]);
+
+    render(personSelect.value);
+    for (const id of SURVEY_IDS) {
+      renderPredictionsSurvey(predictionsData.surveys.find(s => s.id === id), personSelect.value, id);
+    }
+
+    personSelect.onchange = () => {
+      render(personSelect.value);
+      for (const id of SURVEY_IDS) {
+        renderPredictionsSurvey(predictionsData.surveys.find(s => s.id === id), personSelect.value, id);
+      }
+    };
+  }
+
+  seasonSelect.addEventListener("change", () => load(seasonSelect.value));
+  load(season);
+}
+
+boot();
+</script>
+</body>
+</html>

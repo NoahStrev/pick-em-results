@@ -19,6 +19,18 @@ async function loadSeasons() {
   return fetch("data/seasons.json").then(r => r.json());
 }
 
+async function loadPredictions(season) {
+  const res = await fetch(`data/${season}/predictions.json`);
+  return res.ok ? await res.json() : { surveys: [] };
+}
+
+function predictionsRank(survey, person) {
+  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
+  const resp = survey.responses.find(r => r.person === person);
+  if (!resp) return null;
+  return { rank: ranked.findIndex(r => r.person === person) + 1, total: resp.total, possible: resp.possible };
+}
+
 async function loadData(season) {
   const [weeklyTotalsRaw, picksRaw, gamesRaw] = await Promise.all([
     fetch(`data/${season}/weekly_totals.json`).then(r => r.json()),
