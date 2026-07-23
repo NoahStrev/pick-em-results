@@ -60,7 +60,7 @@
       <span class="tag">EVERYONE</span>
       <h2>QUESTION BY QUESTION</h2>
       <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
-      <div class="table-wrap"><table class="pick-log" id="predGridTable-preseason"></table></div>
+      <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predGridTable-preseason"></table></div>
     </div>
   </div>
 
@@ -70,7 +70,7 @@
       <span class="tag">EVERYONE</span>
       <h2>QUESTION BY QUESTION</h2>
       <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
-      <div class="table-wrap"><table class="pick-log" id="predGridTable-midseason"></table></div>
+      <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predGridTable-midseason"></table></div>
     </div>
   </div>
 
@@ -91,7 +91,7 @@
       <span class="tag">DETAIL</span>
       <h2>ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
-      <div class="table-wrap"><table class="pick-log" id="predAnswerLog-preseason"></table></div>
+      <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-preseason"></table></div>
     </div>
     <div class="panel">
       <span class="tag blue">BREAKDOWN</span>
@@ -112,7 +112,7 @@
       <span class="tag">DETAIL</span>
       <h2>ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
-      <div class="table-wrap"><table class="pick-log" id="predAnswerLog-midseason"></table></div>
+      <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-midseason"></table></div>
     </div>
     <div class="panel">
       <span class="tag blue">BREAKDOWN</span>
@@ -245,7 +245,11 @@ function renderIndividual(survey, person, suffix) {
     const possible = questions.reduce((sum, q) => sum + q.points, 0);
     const pct = Math.round((earned / possible) * 100);
     const cls = pct >= 50 ? "green" : pct === 0 ? "red" : "";
-    return `<div class="stat-row"><span class="stat-label">${category}</span><span class="stat-value ${cls}">${earned} / ${possible}</span></div>`;
+    return `<div class="stat-row with-bar">
+      <span class="stat-label">${category}</span>
+      <span class="stat-value ${cls}">${earned} / ${possible}</span>
+      <div class="stat-bar-track"><div class="stat-bar-fill ${cls}" style="width: ${pct}%"></div></div>
+    </div>`;
   }).join("");
 }
 

@@ -196,6 +196,23 @@ main {
 .stat-value.green { color: var(--green); }
 .stat-value.red { color: var(--red); }
 
+/* opt-in variant: a full-width proportion bar under the label/value line
+   (e.g. Predictions' by-category breakdown) -- flex-wrap plus a
+   flex-basis:100% track forces the bar onto its own line without
+   changing the plain label/value .stat-row used elsewhere on the site */
+.stat-row.with-bar { flex-wrap: wrap; }
+.stat-bar-track {
+  flex-basis: 100%;
+  height: 6px;
+  background: #1c2b48;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.stat-bar-fill { height: 100%; border-radius: 3px; background: var(--gold); }
+.stat-bar-fill.green { background: var(--green); }
+.stat-bar-fill.red { background: var(--red); }
+
 select, .select {
   background: var(--panel);
   color: var(--text);
@@ -232,6 +249,48 @@ select, .select {
 .table-wrap {
   overflow-x: auto;
   min-width: 0; /* same grid-item shrink fix as .panel, see above */
+  /* note: per the CSS overflow spec, overflow-x:auto forces the computed
+     overflow-y to auto too (can't be kept at visible even by declaring it
+     explicitly -- confirmed by testing). Harmless here since this wrap has
+     no height constraint, so it never actually scrolls vertically -- but
+     it does mean position:sticky inside a plain .table-wrap has nothing
+     to stick to. See .scroll-box below for the table.sticky-head case,
+     which needs a real bounded-height scroll container instead. */
+}
+
+/* opt-in: wraps long cell text instead of forcing horizontal scroll --
+   for wide comparison tables (many columns, long question/answer text)
+   where nowrap made even a 1920px-wide table require sideways scrolling.
+   Not the default for table.pick-log because narrower tables (e.g. a
+   single person's weekly Pick Log) read better as compact single-line
+   rows with their own scroll, per the note above table.stat-table. */
+table.pick-log.wrap-cells { white-space: normal; }
+
+/* opt-in: pins the header row while scrolling through a long table's
+   rows. Requires the wrapping div to be its own bounded-height scroll
+   box (.scroll-box below) -- position:sticky needs a real scrolling
+   ancestor to stick against; a wrap that just auto-grows to fit content
+   never scrolls internally, so sticky has nothing to stick to (confirmed
+   by testing: the header just scrolled away with the rest of the page).
+   Also requires border-collapse:separate -- sticky on th/td silently
+   does nothing in a border-collapse:collapse table, a separate real
+   browser limitation. border-spacing:0 keeps cells visually adjacent
+   despite the separate model. */
+table.pick-log.sticky-head {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table.pick-log.sticky-head th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  z-index: 1;
+}
+
+/* pairs with table.pick-log.sticky-head -- see comment above */
+.table-wrap.scroll-box {
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
 table.pick-log {
