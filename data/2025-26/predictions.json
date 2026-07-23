@@ -36,7 +36,8 @@
      "type": "text",
      "points": 1,
      "answer": [
-      "Lions"
+      "Lions",
+      "Vikings"
      ],
      "category": "Team & Playoff Predictions"
     },
@@ -216,7 +217,7 @@
      "text": "Who is going to lead the NFL in Rushing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jonathan Taylor",
+     "answer": "James Cook III",
      "category": "Stat Leaders"
     },
     {
@@ -351,7 +352,7 @@
       "packers_record": 0,
       "bears_record": 0,
       "best_nfc_north": 0,
-      "worst_nfc_north": 0,
+      "worst_nfc_north": 1,
       "best_nfc": 0,
       "worst_nfc": 0,
       "nfc_champ": 0,
@@ -383,7 +384,7 @@
       "carroll_qb1": 1,
       "carroll_all_conference": 0.0
      },
-     "total": 2.3333,
+     "total": 3.3333,
      "possible": 34
     },
     {
@@ -526,7 +527,7 @@
       "packers_record": 0,
       "bears_record": 0,
       "best_nfc_north": 1,
-      "worst_nfc_north": 0,
+      "worst_nfc_north": 1,
       "best_nfc": 0,
       "worst_nfc": 0,
       "nfc_champ": 0,
@@ -558,7 +559,7 @@
       "carroll_qb1": 0,
       "carroll_all_conference": 0.0
      },
-     "total": 2.0,
+     "total": 3.0,
      "possible": 34
     },
     {
@@ -632,7 +633,7 @@
       "passing_td_leader": 0,
       "int_leader": 0,
       "receiving_yards_leader": 0,
-      "rushing_yards_leader": 1,
+      "rushing_yards_leader": 0,
       "big_ten_champ": 0,
       "sec_champ": 0,
       "acc_champ": 0,
@@ -643,7 +644,7 @@
       "carroll_qb1": 1,
       "carroll_all_conference": 0.0
      },
-     "total": 3.0,
+     "total": 2.0,
      "possible": 34
     },
     {
@@ -992,7 +993,7 @@
      "text": "Who is going to lead the NFL in Rushing Yards?",
      "type": "text",
      "points": 1,
-     "answer": "Jonathan Taylor",
+     "answer": "James Cook III",
      "category": "Stat Leaders"
     },
     {
@@ -1131,7 +1132,7 @@
       "passing_td_leader": 1,
       "int_leader": 1,
       "receiving_yards_leader": 1,
-      "rushing_yards_leader": 1,
+      "rushing_yards_leader": 0,
       "big_ten_champ": 1,
       "sec_champ": 0,
       "acc_champ": 0,
@@ -1139,7 +1140,7 @@
       "heisman": 0,
       "cfb_champ": 0
      },
-     "total": 17.8572,
+     "total": 16.8572,
      "possible": 36
     },
     {
@@ -1228,7 +1229,7 @@
       "passing_td_leader": 1,
       "int_leader": 1,
       "receiving_yards_leader": 1,
-      "rushing_yards_leader": 1,
+      "rushing_yards_leader": 0,
       "big_ten_champ": 0,
       "sec_champ": 0,
       "acc_champ": 0,
@@ -1236,7 +1237,7 @@
       "heisman": 1,
       "cfb_champ": 0
      },
-     "total": 15.5715,
+     "total": 14.5715,
      "possible": 36
     },
     {
@@ -1325,7 +1326,7 @@
       "passing_td_leader": 1,
       "int_leader": 0,
       "receiving_yards_leader": 1,
-      "rushing_yards_leader": 1,
+      "rushing_yards_leader": 0,
       "big_ten_champ": 0,
       "sec_champ": 0,
       "acc_champ": 0,
@@ -1333,7 +1334,7 @@
       "heisman": 1,
       "cfb_champ": 0
      },
-     "total": 15.5715,
+     "total": 14.5715,
      "possible": 36
     },
     {
@@ -1422,7 +1423,7 @@
       "passing_td_leader": 1,
       "int_leader": 1,
       "receiving_yards_leader": 1,
-      "rushing_yards_leader": 1,
+      "rushing_yards_leader": 0,
       "big_ten_champ": 0,
       "sec_champ": 0,
       "acc_champ": 0,
@@ -1430,7 +1431,7 @@
       "heisman": 0,
       "cfb_champ": 0
      },
-     "total": 13.8572,
+     "total": 12.8572,
      "possible": 36
     }
    ]
