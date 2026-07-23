@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>All-Time -- Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Career pick 'em standings across every season -- total points, weekly wins, and season-by-season history.">
+<meta property="og:title" content="All-Time -- Roommate Ball Knowledge">
+<meta property="og:description" content="Career pick 'em standings across every season -- total points, weekly wins, and season-by-season history.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8F%88</text></svg>">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>ALL-TIME</h1>
+    <p>Career Standings Across Every Season</p>
+  </div>
+  <div class="header-controls">
+    <nav class="tabs">
+      <a href="index.html" id="navLeague">League</a>
+      <a href="player.html" id="navPlayer">Player Spotlight</a>
+      <a href="predictions.html" id="navPredictions">Predictions</a>
+      <a href="alltime.html" class="active" id="navAllTime">All-Time</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="grid grid-1col">
+    <div class="panel">
+      <span class="tag">RANKING</span>
+      <h2>CAREER LEADERBOARD</h2>
+      <p class="sub">Total points, summed across every season on record</p>
+      <div class="chart-wrap short"><canvas id="careerLeaderboardChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag blue">CAREER</span>
+      <h2>CAREER TOTALS</h2>
+      <p class="sub">Points, weekly wins, and seasons played, all-time</p>
+      <div class="table-wrap"><table class="pick-log stat-table" id="careerStatsTable"></table></div>
+    </div>
+  </div>
+
+  <div class="grid grid-1col" style="margin-top: 20px;">
+    <div class="panel">
+      <span class="tag">HISTORY</span>
+      <h2>SEASON BY SEASON</h2>
+      <p class="sub">Final rank and points, per season</p>
+      <div class="table-wrap"><table class="pick-log stat-table" id="seasonHistoryTable"></table></div>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+Chart.defaults.color = PALETTE.muted;
+Chart.defaults.borderColor = "#2B3D5E";
+Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+
+let careerLeaderboardChart = null;
+
+function renderAllTime(rows, seasons) {
+  if (careerLeaderboardChart) careerLeaderboardChart.destroy();
+  careerLeaderboardChart = new Chart(document.getElementById("careerLeaderboardChart"), {
+    type: "bar",
+    data: {
+      labels: rows.map(r => r.person),
+      datasets: [{
+        data: rows.map(r => r.totalPoints),
+        backgroundColor: rows.map(r => PERSON_COLORS[r.person] || PALETTE.gold), borderRadius: 6,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { grid: { display: false } } },
+    },
+  });
+
+  const statsEl = document.getElementById("careerStatsTable");
+  statsEl.innerHTML = "<tr><th>Roommate</th><th>Total Points</th><th>Weeks Won</th><th>Seasons Played</th></tr>" +
+    rows.map(r => `<tr><td>${r.person}</td><td><b>${r.totalPoints}</b></td><td>${r.totalWins}</td><td>${r.seasonsPlayed}</td></tr>`).join("");
+
+  const historyEl = document.getElementById("seasonHistoryTable");
+  historyEl.innerHTML = "<tr><th>Roommate</th>" + seasons.map(s => `<th>${s}</th>`).join("") + "</tr>" +
+    rows.map(r => {
+      const cells = seasons.map(s => {
+        const h = r.history.find(x => x.season === s);
+        if (!h || !h.played) return `<td class="result-ungraded">DNP</td>`;
+        return `<td>#${h.rank} &middot; ${h.points} pts</td>`;
+      }).join("");
+      return `<tr><td>${r.person}</td>${cells}</tr>`;
+    }).join("");
+}
+
+async function boot() {
+  const { seasons } = await loadSeasons();
+  const allSeasonsData = await loadAllSeasonsData(seasons);
+  const rows = careerLeaderboard(allSeasonsData);
+  renderAllTime(rows, seasons);
+}
+
+boot();
+</script>
+</body>
+</html>

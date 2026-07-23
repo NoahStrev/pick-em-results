@@ -133,6 +133,37 @@ function seasonPoints(weeklyTotals, person) {
   return weeklyTotals.filter(r => r.person === person).reduce((s, r) => s + r.totalEarned, 0);
 }
 
+// -- All-Time / career stats (cross-season) --
+
+async function loadAllSeasonsData(seasons) {
+  const results = await Promise.all(seasons.map(s => loadData(s)));
+  return seasons.map((season, i) => ({ season, ...results[i] }));
+}
+
+// Per-person career totals plus a season-by-season history, sorted by
+// total career points descending. Missing a season entirely (not on that
+// season's roster) is distinct from playing and scoring 0 -- history
+// entries record `played: false` for the former.
+function careerLeaderboard(allSeasonsData) {
+  const people = [...new Set(allSeasonsData.flatMap(d => d.people))].sort();
+  return people
+    .map(person => {
+      let totalPoints = 0, totalWins = 0, seasonsPlayed = 0;
+      const history = allSeasonsData.map(({ season, weeklyTotals, people: seasonPeople }) => {
+        if (!seasonPeople.includes(person)) return { season, played: false };
+        const points = seasonPoints(weeklyTotals, person);
+        const rank = seasonRank(weeklyTotals, seasonPeople, person);
+        const wins = weeklyWinsCount(weeklyTotals, person);
+        totalPoints += points;
+        totalWins += wins;
+        seasonsPlayed += 1;
+        return { season, played: true, points, rank, wins };
+      });
+      return { person, totalPoints, totalWins, seasonsPlayed, history };
+    })
+    .sort((a, b) => b.totalPoints - a.totalPoints);
+}
+
 function weeklyPerformanceSeries(weeklyTotals, weeks, person) {
   const personByWeek = new Map(weeklyTotals.filter(r => r.person === person).map(r => [r.week, r.totalEarned]));
   const personData = weeks.map(w => (personByWeek.has(w) ? personByWeek.get(w) : null));
