@@ -66,6 +66,7 @@ nav.tabs {
 
 .inline-select-wrap {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
@@ -252,6 +253,31 @@ select, .select {
   font-weight: bold;
   min-width: 220px;
 }
+
+/* custom bet-size amount, e.g. "$[  1]" -- a $ prefix plus a bare number
+   input, styled to look like one control (matching select's look) rather
+   than two separate pieces */
+.dollar-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--panel);
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.dollar-input span { color: var(--muted); font-weight: bold; font-size: 15px; }
+.dollar-input input {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: bold;
+  width: 64px;
+  padding: 0;
+}
+.dollar-input input:focus { outline: none; }
+.dollar-input:focus-within { outline: 3px solid var(--blue); outline-offset: 2px; }
 
 .kpi-row {
   display: grid;

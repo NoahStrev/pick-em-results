@@ -120,8 +120,10 @@
       <h2>WHAT IF EVERY PICK WAS A BET?</h2>
       <p class="sub">Real market moneylines mapped to every pick this season &mdash; a flat bet on each Game Pick, a bigger bonus bet on each Guaranteed Winner/Loser pick. Hypothetical money, not the real points standings.</p>
       <div class="inline-select-wrap">
-        <span class="tag blue">BET SIZE</span>
-        <select id="tierSelect" aria-label="Select bet size tier"></select>
+        <span class="tag blue">GAME BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="gameAmountInput" min="0" step="1" value="1" aria-label="Game pick bet amount"></div>
+        <span class="tag blue">BONUS BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="bonusAmountInput" min="0" step="1" value="5" aria-label="Bonus prediction bet amount"></div>
       </div>
       <div class="table-wrap"><table class="pick-log stat-table" id="bettingTable"></table></div>
     </div>
@@ -139,8 +141,7 @@ let standingsChart = null, leaderboardChart = null;
 let currentGames = [], currentPicks = [], currentPeople = [];
 
 function renderBettingTable() {
-  const tierSelect = document.getElementById("tierSelect");
-  const tier = BET_TIERS[Number(tierSelect.value)];
+  const tier = readBetAmounts();
   const rows = bettingLeaderboard(currentGames, currentPicks, currentPeople, tier);
   const money = formatMoney;
   const cls = n => (n > 0 ? "result-correct" : n < 0 ? "result-incorrect" : "");
@@ -283,9 +284,7 @@ async function boot() {
   const seasonSelect = document.getElementById("seasonSelect");
   populateSeasonSelect(seasonSelect, seasons);
 
-  const tierSelect = document.getElementById("tierSelect");
-  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
-  tierSelect.addEventListener("change", () => { if (currentGames.length) renderBettingTable(); });
+  wireBetAmountInputs(() => { if (currentGames.length) renderBettingTable(); });
 
   const season = resolveSeason(seasons, defaultSeason);
   seasonSelect.value = season;

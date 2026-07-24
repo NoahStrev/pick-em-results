@@ -225,11 +225,23 @@ function weeklyPerformanceSeries(weeklyTotals, weeks, person) {
 // team loses is the same wager as betting whoever they're playing wins. A pick on
 // either side of a game that ended in a tie pushes (0 profit) regardless of how
 // the pick 'em survey itself graded it, matching how real sportsbooks settle ties.
-const BET_TIERS = [
-  { label: "$1 game / $5 bonus", game: 1, bonus: 5 },
-  { label: "$10 game / $50 bonus", game: 10, bonus: 50 },
-  { label: "$100 game / $500 bonus", game: 100, bonus: 500 },
-];
+// Every pick (game or bonus) is graded and paid out independently -- there is no
+// parlay logic anywhere in this file; pickUnitProfit() runs once per pick and the
+// results are summed, never multiplied together across picks.
+
+// Reads the two custom bet-amount <input>s (ids are the same on every page
+// that has a betting section). Blank/negative/non-numeric input reads as 0
+// rather than throwing, so a mid-typing empty field just shows $0 briefly.
+function readBetAmounts() {
+  const game = Math.max(0, Number(document.getElementById("gameAmountInput").value) || 0);
+  const bonus = Math.max(0, Number(document.getElementById("bonusAmountInput").value) || 0);
+  return { game, bonus };
+}
+
+function wireBetAmountInputs(onChange) {
+  document.getElementById("gameAmountInput").addEventListener("input", onChange);
+  document.getElementById("bonusAmountInput").addEventListener("input", onChange);
+}
 
 function formatMoney(n) {
   return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

@@ -102,8 +102,10 @@
       <h2>THIS SEASON'S P/L</h2>
       <p class="sub">If every pick were a real moneyline bet, this season only</p>
       <div class="inline-select-wrap" style="margin-bottom: 14px;">
-        <span class="tag blue">BET SIZE</span>
-        <select id="tierSelect" aria-label="Select bet size tier"></select>
+        <span class="tag blue">GAME BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="gameAmountInput" min="0" step="1" value="1" aria-label="Game pick bet amount"></div>
+        <span class="tag blue">BONUS BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="bonusAmountInput" min="0" step="1" value="5" aria-label="Bonus prediction bet amount"></div>
       </div>
       <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
@@ -143,7 +145,6 @@
 <script>
 const personSelect = document.getElementById("personSelect");
 const seasonSelect = document.getElementById("seasonSelect");
-const tierSelect = document.getElementById("tierSelect");
 const SURVEY_IDS = ["preseason", "midseason"];
 
 let weeklyTotals, picks, people, games, careerRows;
@@ -179,7 +180,7 @@ function renderCareer(person) {
 }
 
 function renderBetting(person) {
-  const tier = BET_TIERS[Number(tierSelect.value)];
+  const tier = readBetAmounts();
   const units = bettingUnitTotals(games, picks, [person])[person];
   const gameTotal = units.game * tier.game;
   const bonusTotal = units.bonus * tier.bonus;
@@ -250,8 +251,7 @@ async function boot() {
   const { seasons, default: defaultSeason } = await loadSeasons();
   populateSeasonSelect(seasonSelect, seasons);
 
-  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
-  tierSelect.addEventListener("change", () => { if (games.length) renderBetting(personSelect.value); });
+  wireBetAmountInputs(() => { if (games.length) renderBetting(personSelect.value); });
 
   const allSeasonsData = await loadAllSeasonsData(seasons);
   careerRows = careerLeaderboard(allSeasonsData);

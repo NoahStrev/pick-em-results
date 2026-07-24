@@ -84,8 +84,10 @@
     </div>
     <div class="grid grid-1col" style="gap: 14px;">
       <div class="inline-select-wrap" style="margin-bottom: 0;">
-        <span class="tag blue">BET SIZE</span>
-        <select id="tierSelect" aria-label="Select bet size tier"></select>
+        <span class="tag blue">GAME BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="gameAmountInput" min="0" step="1" value="1" aria-label="Game pick bet amount"></div>
+        <span class="tag blue">BONUS BET</span>
+        <div class="dollar-input"><span>$</span><input type="number" id="bonusAmountInput" min="0" step="1" value="5" aria-label="Bonus prediction bet amount"></div>
       </div>
       <div class="panel">
         <div class="stat-list" aria-live="polite">
@@ -115,12 +117,11 @@ Chart.defaults.borderColor = "#2B3D5E";
 Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
 
 const select = document.getElementById("personSelect");
-const tierSelect = document.getElementById("tierSelect");
 let chart = null, bettingChart = null;
 let weeklyTotals, picks, people, weeks, games;
 
 function renderBetting(person) {
-  const tier = BET_TIERS[Number(tierSelect.value)];
+  const tier = readBetAmounts();
 
   const units = bettingUnitTotals(games, picks, [person])[person];
   const gameTotal = units.game * tier.game;
@@ -222,8 +223,7 @@ async function boot() {
   const seasonSelect = document.getElementById("seasonSelect");
   populateSeasonSelect(seasonSelect, seasons);
 
-  tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
-  tierSelect.addEventListener("change", () => { if (games.length) renderBetting(select.value); });
+  wireBetAmountInputs(() => { if (games.length) renderBetting(select.value); });
 
   const season = resolveSeason(seasons, defaultSeason);
   seasonSelect.value = season;
