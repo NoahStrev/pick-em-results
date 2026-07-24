@@ -1,0 +1,4 @@
+{
+ "fields": ["person", "week", "weekOrder", "totalEarned", "cumulativeEarned"],
+ "rows": []
+}

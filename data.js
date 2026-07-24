@@ -125,15 +125,19 @@ function finalLeaderboard(weeklyTotals, people) {
     .sort((a, b) => b.points - a.points);
 }
 
-function teamPickStats(picks, { person = null, questionType = "Game Pick" } = {}) {
+// `field` is the property holding the picked value -- "team" for NFL Game/
+// Guaranteed picks, "pick" for UFC Winner/Method/Round picks (fighter name,
+// method, or round are all just "the value picked" under a different name).
+function teamPickStats(picks, { person = null, questionType = "Game Pick", field = "team" } = {}) {
   const filtered = picks.filter(p => p.questionType === questionType && (person ? p.person === person : true));
   const byPerson = {};
   for (const p of filtered) {
     byPerson[p.person] ??= { picked: {}, correct: {}, incorrect: {} };
     const bucket = byPerson[p.person];
-    bucket.picked[p.team] = (bucket.picked[p.team] || 0) + 1;
-    if (p.result === "Correct") bucket.correct[p.team] = (bucket.correct[p.team] || 0) + 1;
-    if (p.result === "Incorrect") bucket.incorrect[p.team] = (bucket.incorrect[p.team] || 0) + 1;
+    const val = p[field];
+    bucket.picked[val] = (bucket.picked[val] || 0) + 1;
+    if (p.result === "Correct") bucket.correct[val] = (bucket.correct[val] || 0) + 1;
+    if (p.result === "Incorrect") bucket.incorrect[val] = (bucket.incorrect[val] || 0) + 1;
   }
   function topOf(counts) {
     const entries = Object.entries(counts);
@@ -370,4 +374,37 @@ function bettingCumulativeSeries(games, picks, weeks, person, tier) {
     running += gameByWeek.get(w) * tier.game + bonusByWeek.get(w) * tier.bonus;
     return running;
   });
+}
+
+// -- UFC (numbered-card pick contest) --
+// Modeled as one continuous, never-resetting competition rather than a
+// per-season one -- "week"/"weekOrder" in weekly_totals.json and picks.json
+// hold the event's label ("UFC 300") and chronological order, so every
+// function above that's already generic over those field names
+// (uniqueWeeksSorted, seasonStandingsSeries, weekOverWeekGrid,
+// finalLeaderboard, weeklyWinsCount, bestWeekScore, seasonRank, seasonPoints,
+// teamPickStats via its `field` option) works here unmodified. Only the
+// loading and per-event fight-card pieces below are UFC-specific.
+
+async function loadUfcEvents() {
+  const res = await fetch("data/ufc/events.json");
+  return res.ok ? (await res.json()).events : [];
+}
+
+async function loadUfcData() {
+  const [weeklyTotalsRaw, picksRaw] = await Promise.all([
+    fetch("data/ufc/weekly_totals.json").then(r => r.json()),
+    fetch("data/ufc/picks.json").then(r => r.json()),
+  ]);
+  const weeklyTotals = toObjects(weeklyTotalsRaw);
+  const people = [...new Set(weeklyTotals.map(r => r.person))].sort();
+  return { weeklyTotals, picks: toObjects(picksRaw), people };
+}
+
+// One event's fight card (matchups + actual results), keyed by event id.
+// Not present until that event has been graded -- a missing file just means
+// "not graded yet", not an error.
+async function loadUfcFights(eventId) {
+  const res = await fetch(`data/ufc/${eventId}/fights.json`);
+  return res.ok ? await res.json() : [];
 }

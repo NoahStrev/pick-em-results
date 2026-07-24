@@ -1,0 +1,4 @@
+{
+ "fields": ["week", "weekOrder", "fightId", "person", "questionType", "pick", "pointsEarned", "pointsPossible", "result"],
+ "rows": []
+}

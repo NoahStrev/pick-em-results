@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UFC Picks -- Roommate Ball Knowledge</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="UFC numbered-card pick contest -- winner, method, and round picks for every fight, graded and tracked across every card.">
+<meta property="og:title" content="UFC Picks -- Roommate Ball Knowledge">
+<meta property="og:description" content="UFC numbered-card pick contest -- winner, method, and round picks for every fight, graded and tracked across every card.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8F%88</text></svg>">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>UFC PICKS</h1>
+    <p>Numbered-Card Pick Contest &middot; Winner, Method &amp; Round</p>
+  </div>
+  <div class="header-controls">
+    <nav class="tabs">
+      <a href="index.html" id="navLeague">League</a>
+      <a href="player.html" id="navPlayer">Player Spotlight</a>
+      <a href="predictions.html" id="navPredictions">Predictions</a>
+      <a href="alltime.html" id="navAllTime">All-Time</a>
+      <a href="profile.html" id="navProfile">Profile</a>
+      <a href="ufc.html" class="active" id="navUfc">UFC</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="panel" id="emptyState" style="display: none;">
+    <span class="tag">COMING SOON</span>
+    <h2>NO CARDS GRADED YET</h2>
+    <p class="sub">This tab is wired up and ready to go &mdash; once the first numbered card's picks are graded, standings and fight-by-fight results will show up here.</p>
+  </div>
+
+  <div id="ufcContent">
+    <div class="grid grid-2col">
+      <div class="panel">
+        <span class="tag">HERO CHART</span>
+        <h2>CUMULATIVE STANDINGS</h2>
+        <p class="sub">Total points by event, all roommates, every numbered card to date</p>
+        <div class="chart-wrap"><canvas id="standingsChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <span class="tag">RANKING</span>
+        <h2>CURRENT LEADERBOARD</h2>
+        <p class="sub">Total points across every card so far</p>
+        <div class="chart-wrap"><canvas id="leaderboardChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="grid grid-1col" style="margin-top: 20px;">
+      <div class="panel">
+        <span class="tag">EVENT BY EVENT</span>
+        <h2>CARD BY CARD</h2>
+        <p class="sub">Points earned per card &mdash; larger square = that card's winner</p>
+        <div id="heatmap" class="heatmap"></div>
+      </div>
+    </div>
+
+    <div class="section-label">Card Detail</div>
+    <div class="panel inline-select-wrap" style="margin-top: 20px;">
+      <span class="tag blue">EVENT</span>
+      <select id="eventSelect" aria-label="Select UFC card"></select>
+    </div>
+
+    <div class="subsection-label" style="margin-top: 20px;">Winner Picks</div>
+    <div class="grid grid-3col" style="margin-top: 10px;">
+      <div class="panel">
+        <span class="tag">FIGHTER PICKS</span>
+        <h2>MOST PICKED WINNER</h2>
+        <p class="sub">By roommate, this card</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostPickedWinner"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag green">ACCURACY</span>
+        <h2 class="green">MOST CORRECT PICK</h2>
+        <p class="sub">Winner picked right most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostCorrectWinner"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag red">ACCURACY</span>
+        <h2 class="red">MOST MISSED PICK</h2>
+        <p class="sub">Winner picked wrong most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostMissedWinner"></table></div>
+      </div>
+    </div>
+
+    <div class="subsection-label" style="margin: 22px 0 -6px;">Method Picks</div>
+    <div class="grid grid-3col" style="margin-top: 20px;">
+      <div class="panel">
+        <span class="tag">METHOD PICKS</span>
+        <h2>MOST PICKED METHOD</h2>
+        <p class="sub">By roommate, this card</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostPickedMethod"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag green">ACCURACY</span>
+        <h2 class="green">MOST CORRECT PICK</h2>
+        <p class="sub">Method picked right most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostCorrectMethod"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag red">ACCURACY</span>
+        <h2 class="red">MOST MISSED PICK</h2>
+        <p class="sub">Method picked wrong most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostMissedMethod"></table></div>
+      </div>
+    </div>
+
+    <div class="subsection-label" style="margin: 28px 0 -6px;">Round Picks</div>
+    <div class="grid grid-3col" style="margin-top: 20px;">
+      <div class="panel">
+        <span class="tag">ROUND PICKS</span>
+        <h2>MOST PICKED ROUND</h2>
+        <p class="sub">By roommate, this card</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostPickedRound"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag green">ACCURACY</span>
+        <h2 class="green">MOST CORRECT PICK</h2>
+        <p class="sub">Round picked right most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostCorrectRound"></table></div>
+      </div>
+      <div class="panel">
+        <span class="tag red">ACCURACY</span>
+        <h2 class="red">MOST MISSED PICK</h2>
+        <p class="sub">Round picked wrong most often, by roommate</p>
+        <div class="table-wrap"><table class="pick-log stat-table" id="mostMissedRound"></table></div>
+      </div>
+    </div>
+
+    <div class="section-label">Fight Card</div>
+    <div class="legend-row" style="margin-top: 20px;">
+      <span class="legend-item"><span class="legend-swatch result-correct"></span>Correct</span>
+      <span class="legend-item"><span class="legend-swatch result-incorrect"></span>Incorrect</span>
+      <span class="legend-item"><span class="legend-swatch result-ungraded"></span>Ungraded / no pick</span>
+    </div>
+    <div class="grid grid-1col" style="margin-top: 10px;">
+      <div class="panel">
+        <span class="tag">EVERYONE</span>
+        <h2>FIGHT BY FIGHT</h2>
+        <p class="sub">Every fight, the actual result, and how everyone picked it</p>
+        <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="combinedGrid"></table></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="credit">Noah Streveler's Confidential and Proprietary Information</footer>
+
+<script src="data.js"></script>
+<script>
+initChartDefaults();
+
+let events = [];
+let weeklyTotals = [], picks = [], people = [];
+let standingsChart = null, leaderboardChart = null;
+
+function renderCumulative() {
+  const weeks = uniqueWeeksSorted(weeklyTotals);
+
+  const series = seasonStandingsSeries(weeklyTotals, people);
+  if (standingsChart) standingsChart.destroy();
+  standingsChart = new Chart(document.getElementById("standingsChart"), {
+    type: "line",
+    data: {
+      labels: weeks,
+      datasets: series.map(s => ({
+        label: s.person,
+        data: s.data,
+        borderColor: PERSON_COLORS[s.person] || PALETTE.gold,
+        backgroundColor: PERSON_COLORS[s.person] || PALETTE.gold,
+        tension: 0.15,
+        pointRadius: 2,
+        borderWidth: 2,
+      })),
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom", labels: { boxWidth: 12 } } },
+      scales: {
+        x: { ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 12 } },
+        y: { title: { display: true, text: "Cumulative points" } },
+      },
+    },
+  });
+
+  const board = finalLeaderboard(weeklyTotals, people);
+  if (leaderboardChart) leaderboardChart.destroy();
+  leaderboardChart = new Chart(document.getElementById("leaderboardChart"), {
+    type: "bar",
+    data: {
+      labels: board.map(r => r.person),
+      datasets: [{
+        data: board.map(r => r.points),
+        backgroundColor: board.map(r => PERSON_COLORS[r.person] || PALETTE.gold), borderRadius: 6,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { display: false }, y: { grid: { display: false } } },
+    },
+  });
+
+  const { weeks: wowWeeks, grid, winners } = weekOverWeekGrid(weeklyTotals, people);
+  const heatmapEl = document.getElementById("heatmap");
+  heatmapEl.innerHTML = "";
+  heatmapEl.style.gridTemplateColumns = `120px repeat(${wowWeeks.length}, 1fr)`;
+  heatmapEl.style.gridTemplateRows = `24px repeat(${people.length}, 40px)`;
+
+  heatmapEl.appendChild(document.createElement("div"));
+  for (const w of wowWeeks) {
+    const el = document.createElement("div");
+    el.className = "hlabel col";
+    el.textContent = w.replace(/^UFC\s*/i, "");
+    heatmapEl.appendChild(el);
+  }
+
+  const vmin = 0, vmax = 15;
+  function colorFor(v) {
+    const t = Math.max(0, Math.min(1, (v - vmin) / (vmax - vmin)));
+    const stops = [[28, 43, 72], [91, 74, 38], [242, 184, 77]];
+    const seg = t < 0.5 ? [stops[0], stops[1], t * 2] : [stops[1], stops[2], (t - 0.5) * 2];
+    const [a, b, tt] = seg;
+    const mix = (i) => Math.round(a[i] + (b[i] - a[i]) * tt);
+    return `rgb(${mix(0)},${mix(1)},${mix(2)})`;
+  }
+
+  people.forEach((person, i) => {
+    const label = document.createElement("div");
+    label.className = "hlabel";
+    label.textContent = person;
+    heatmapEl.appendChild(label);
+
+    grid[i].forEach((v, j) => {
+      const cell = document.createElement("div");
+      if (v === null) {
+        cell.className = "hcell dnp";
+        cell.textContent = "DNP";
+        cell.style.background = "#111d33";
+      } else {
+        const isWinner = v === winners[j];
+        cell.className = "hcell";
+        cell.textContent = v;
+        cell.style.background = colorFor(v);
+        cell.style.transform = isWinner ? "scale(1.12)" : "scale(0.82)";
+        cell.style.fontSize = isWinner ? "13px" : "11px";
+        cell.style.zIndex = isWinner ? "1" : "0";
+      }
+      heatmapEl.appendChild(cell);
+    });
+  });
+}
+
+function renderTable(id, statsObj, key) {
+  const el = document.getElementById(id);
+  el.innerHTML = "<tr><th>Roommate</th><th>Pick</th><th>Count</th></tr>" +
+    people.map(p => {
+      const s = statsObj[p]?.[key];
+      return `<tr><td>${p}</td><td>${s ? s.teams.join(", ") : "--"}</td><td>${s ? s.count : "--"}</td></tr>`;
+    }).join("");
+}
+
+// groups one event's picks by fight for the combined grid -- one category-row
+// per fight, then a Winner/Method/Round sub-row under it
+function groupByFight(fights, eventPicks) {
+  return fights.map(fight => {
+    const fightPicks = eventPicks.filter(p => p.fightId === fight.id);
+    const rows = ["Winner", "Method", "Round"].map(questionType => ({
+      questionType,
+      correct: fight.result ? fight.result[questionType.toLowerCase()] : null,
+      byPerson: Object.fromEntries(fightPicks.filter(p => p.questionType === questionType).map(p => [p.person, p])),
+    }));
+    return { fight, rows };
+  });
+}
+
+function renderCombinedGrid(fights, eventPicks) {
+  const el = document.getElementById("combinedGrid");
+  if (!fights.length) {
+    el.innerHTML = "<tr><th>No fight data for this card yet</th></tr>";
+    return;
+  }
+  const colspan = people.length + 2;
+  el.innerHTML = "<tr><th>Question</th><th>Actual Result</th>" +
+    people.map(p => `<th>${p}</th>`).join("") + "</tr>" +
+    groupByFight(fights, eventPicks).map(({ fight, rows }) => {
+      const label = (fight.mainEvent ? "Main Event &mdash; " : "") + `${fight.fighterA} vs ${fight.fighterB}`;
+      return `<tr class="category-row"><td colspan="${colspan}">${label}</td></tr>` +
+        rows.map(r => {
+          const cells = people.map(p => {
+            const pick = r.byPerson[p];
+            if (!pick) return `<td class="result-ungraded">--</td>`;
+            const cls = pick.result === "Correct" ? "result-correct" : pick.result === "Incorrect" ? "result-incorrect" : "result-ungraded";
+            return `<td class="${cls}">${pick.pick}</td>`;
+          }).join("");
+          return `<tr><td>${r.questionType}</td><td>${r.correct ?? "--"}</td>${cells}</tr>`;
+        }).join("");
+    }).join("");
+}
+
+async function renderEventDetail(eventId) {
+  const event = events.find(e => e.id === eventId);
+  const eventPicks = event ? picks.filter(p => p.week === event.label) : [];
+
+  const winnerStats = teamPickStats(eventPicks, { questionType: "Winner", field: "pick" });
+  renderTable("mostPickedWinner", winnerStats, "picked");
+  renderTable("mostCorrectWinner", winnerStats, "correct");
+  renderTable("mostMissedWinner", winnerStats, "incorrect");
+
+  const methodStats = teamPickStats(eventPicks, { questionType: "Method", field: "pick" });
+  renderTable("mostPickedMethod", methodStats, "picked");
+  renderTable("mostCorrectMethod", methodStats, "correct");
+  renderTable("mostMissedMethod", methodStats, "incorrect");
+
+  const roundStats = teamPickStats(eventPicks, { questionType: "Round", field: "pick" });
+  renderTable("mostPickedRound", roundStats, "picked");
+  renderTable("mostCorrectRound", roundStats, "correct");
+  renderTable("mostMissedRound", roundStats, "incorrect");
+
+  const fights = eventId ? await loadUfcFights(eventId) : [];
+  renderCombinedGrid(fights, eventPicks);
+}
+
+async function boot() {
+  events = await loadUfcEvents();
+  ({ weeklyTotals, picks, people } = await loadUfcData());
+
+  const hasData = events.length > 0;
+  document.getElementById("emptyState").style.display = hasData ? "none" : "";
+  document.getElementById("ufcContent").style.display = hasData ? "" : "none";
+  if (!hasData) return;
+
+  renderCumulative();
+
+  const eventSelect = document.getElementById("eventSelect");
+  eventSelect.innerHTML = events.map(e => `<option value="${e.id}">${e.label}</option>`).join("");
+  eventSelect.value = events[events.length - 1].id;
+  eventSelect.addEventListener("change", () => renderEventDetail(eventSelect.value));
+  renderEventDetail(eventSelect.value);
+}
+
+boot();
+</script>
+</body>
+</html>

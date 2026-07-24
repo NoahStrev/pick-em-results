@@ -3,7 +3,8 @@
 A pick 'em stats site for an NFL season survey among roommates: weekly
 picks, season standings, per-person breakdowns, prediction contests, and
 career stats. Multi-season -- a selector switches between years wherever
-the page is season-scoped.
+the page is season-scoped. Also tracks a separate, ongoing UFC
+numbered-card pick contest (not season-scoped).
 
 - **League** (`index.html`): season standings, week-by-week scores, final
   leaderboard, most-picked/correct/missed teams, and hypothetical betting
@@ -21,6 +22,10 @@ the page is season-scoped.
 - **Profile** (`profile.html`): everything about one person in one
   place -- career totals, this season's League/betting stats, and
   predictions performance, all behind a single name selector.
+- **UFC** (`ufc.html`): a separate, never-resetting pick contest for
+  numbered UFC cards -- Winner/Method/Round picks per fight, 1 point each.
+  Cumulative standings across every card to date, plus a per-card fight-by-
+  fight breakdown. Not season-scoped -- no season selector on this page.
 
 Static site, no backend -- data is exported from a season-tracking workbook
 into per-season JSON files under `data/<season>/` (`weekly_totals.json`,
@@ -29,3 +34,8 @@ into per-season JSON files under `data/<season>/` (`weekly_totals.json`,
 client-side. `data/seasons.json` lists which seasons exist; add a new one
 there once its export lands, no code changes needed for the season-aware
 pages -- All-Time and Profile's career section pick it up automatically too.
+
+UFC's data lives separately under `data/ufc/` (`events.json`,
+`weekly_totals.json`, `picks.json`, plus a `fights.json` per event) --
+graded by `ufc-picks/grade.py` (see that folder's README), not
+`export_json.py`.
