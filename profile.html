@@ -33,15 +33,19 @@
 </header>
 
 <main>
-  <div class="panel inline-select-wrap" style="margin-bottom: 0;">
-    <span class="tag blue" style="margin-bottom: 0;">NAME FILTER</span>
-    <select id="personSelect" aria-label="Select roommate"></select>
+  <div class="panel profile-hero">
+    <div class="profile-name" id="profileName">--</div>
+    <p class="profile-subtitle" id="profileSubtitle">--</p>
+    <div class="inline-select-wrap" style="margin-top: 16px; margin-bottom: 0;">
+      <span class="tag blue" style="margin-bottom: 0;">SWITCH ROOMMATE</span>
+      <select id="personSelect" aria-label="Select roommate"></select>
+    </div>
   </div>
 
   <div class="section-label" style="margin-top: 20px;">Career</div>
   <div class="grid grid-2col-even" style="margin-top: 20px;">
     <div class="panel">
-      <span class="tag">CAREER</span>
+      <span class="tag">TOTALS</span>
       <h2>ALL-TIME TOTALS</h2>
       <p class="sub">Summed across every season on record</p>
       <div class="stat-list" aria-live="polite">
@@ -79,7 +83,7 @@
       </div>
     </div>
     <div class="panel">
-      <span class="tag">BONUS</span>
+      <span class="tag">GUARANTEED</span>
       <h2>BONUS PREDICTIONS</h2>
       <p class="sub">This season</p>
       <div class="stat-list" aria-live="polite">
@@ -92,15 +96,15 @@
   </div>
 
   <div class="section-label">Hypothetical Betting</div>
-  <div class="panel inline-select-wrap" style="margin-top: 20px; margin-bottom: 0;">
-    <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
-    <select id="tierSelect" aria-label="Select bet size tier"></select>
-  </div>
   <div class="grid grid-1col" style="margin-top: 20px;">
     <div class="panel">
-      <span class="tag">BETTING</span>
+      <span class="tag">P/L</span>
       <h2>THIS SEASON'S P/L</h2>
       <p class="sub">If every pick were a real moneyline bet, this season only</p>
+      <div class="inline-select-wrap" style="margin-bottom: 14px;">
+        <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
+        <select id="tierSelect" aria-label="Select bet size tier"></select>
+      </div>
       <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Game Bets P/L</span><span class="stat-value" id="betGameOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Bonus Bets P/L</span><span class="stat-value" id="betBonusOut">--</span></div>
@@ -112,7 +116,7 @@
   <div class="section-label" id="predictionsLabel">Predictions</div>
   <div class="grid grid-2col-even" style="margin-top: 20px;">
     <div class="panel">
-      <span class="tag">PRESEASON</span>
+      <span class="tag">SURVEY</span>
       <h2>PRESEASON CONTEST</h2>
       <p class="sub">Rank and score, if this roommate took it</p>
       <div class="kpi-row" aria-live="polite">
@@ -122,7 +126,7 @@
       </div>
     </div>
     <div class="panel">
-      <span class="tag">MIDSEASON</span>
+      <span class="tag">SURVEY</span>
       <h2>MIDSEASON CONTEST</h2>
       <p class="sub">Rank and score, if this roommate took it</p>
       <div class="kpi-row" aria-live="polite">
@@ -147,6 +151,18 @@ let weeklyTotals, picks, people, games, careerRows;
 function fmtTeamStat(s) { return s ? `${s.teams.join(", ")} (${s.count})` : "--"; }
 const money = formatMoney;
 function moneyCls(n) { return n > 0 ? "green" : n < 0 ? "red" : ""; }
+
+function renderHero(person) {
+  const nameEl = document.getElementById("profileName");
+  const subEl = document.getElementById("profileSubtitle");
+  nameEl.textContent = person;
+  nameEl.style.color = PERSON_COLORS[person] || PALETTE.gold;
+
+  const row = careerRows.find(r => r.person === person);
+  // competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential position
+  const rank = row ? 1 + careerRows.filter(r => r.totalPoints > row.totalPoints).length : null;
+  subEl.textContent = row ? `Career #${rank} · ${row.totalPoints} pts all-time` : "";
+}
 
 function renderCareer(person) {
   const row = careerRows.find(r => r.person === person);
@@ -230,6 +246,7 @@ function renderPredictionsSurvey(survey, person, suffix) {
 }
 
 function render(person) {
+  renderHero(person);
   renderCareer(person);
   renderThisSeason(person);
 }

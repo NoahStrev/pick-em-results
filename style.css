@@ -156,6 +156,25 @@ main {
   margin: 0 0 14px;
 }
 
+/* Profile page's identity header -- name colored per PERSON_COLORS
+   (set inline via JS, matches how every chart on the site ties a
+   color to a person) plus a one-line career headline stat, so the
+   page reads as "whose page this is" instead of just a data dump */
+.profile-hero { padding: 26px 24px; }
+.profile-name {
+  font-family: Impact, "Arial Narrow Bold", sans-serif;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  font-size: 38px;
+  margin: 0 0 4px;
+  color: var(--gold);
+}
+.profile-subtitle {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
 .section-label {
   color: var(--muted);
   font-size: 13px;

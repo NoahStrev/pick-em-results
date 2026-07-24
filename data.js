@@ -25,10 +25,11 @@ async function loadPredictions(season) {
 }
 
 function predictionsRank(survey, person) {
-  const ranked = [...survey.responses].sort((a, b) => b.total - a.total);
   const resp = survey.responses.find(r => r.person === person);
   if (!resp) return null;
-  return { rank: ranked.findIndex(r => r.person === person) + 1, total: resp.total, possible: resp.possible };
+  // competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential position
+  const rank = 1 + survey.responses.filter(r => r.total > resp.total).length;
+  return { rank, total: resp.total, possible: resp.possible };
 }
 
 async function loadData(season) {
