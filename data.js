@@ -45,8 +45,9 @@ function setSeasonInURL(season) {
 }
 
 // Shared across every season-aware page's nav (League/Player Spotlight/
-// Predictions/Profile) -- All-Time's link is intentionally static, it's
-// season-agnostic, see its own page.
+// Predictions/Profile) -- All-Time and UFC's links are intentionally
+// static, both are season-agnostic (All-Time spans every season; UFC
+// isn't season-scoped at all).
 function updateNavLinks(season) {
   document.getElementById("navLeague").href = `index.html?season=${season}`;
   document.getElementById("navPlayer").href = `player.html?season=${season}`;
@@ -267,6 +268,18 @@ function moneyClass(n) {
 // "Team, Team (count)" for a teamPickStats() top-of entry, or "--" if none
 function formatTeamStat(s) {
   return s ? `${s.teams.join(", ")} (${s.count})` : "--";
+}
+
+// Renders a teamPickStats() result into a 3-column Roommate/<label>/Count
+// table -- identical between League's team stats and UFC's fighter/method/
+// round stats except for the middle column's header text.
+function renderPickStatTable(id, statsObj, key, people, columnLabel) {
+  const el = document.getElementById(id);
+  el.innerHTML = `<tr><th>Roommate</th><th>${columnLabel}</th><th>Count</th></tr>` +
+    people.map(p => {
+      const s = statsObj[p]?.[key];
+      return `<tr><td>${p}</td><td>${s ? s.teams.join(", ") : "--"}</td><td>${s ? s.count : "--"}</td></tr>`;
+    }).join("");
 }
 
 // Shared season-stats block: KPI row (rank/points/accuracy/wins/best week) plus

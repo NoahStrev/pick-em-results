@@ -252,14 +252,7 @@ function renderLeague(weeklyTotals, picks, people, games) {
 
   // Most Picked / Correct / Missed (Game Picks)
   const stats = teamPickStats(picks);
-  function renderTable(id, statsObj, key) {
-    const el = document.getElementById(id);
-    el.innerHTML = "<tr><th>Roommate</th><th>Team</th><th>Count</th></tr>" +
-      people.map(p => {
-        const s = statsObj[p]?.[key];
-        return `<tr><td>${p}</td><td>${s ? s.teams.join(", ") : "--"}</td><td>${s ? s.count : "--"}</td></tr>`;
-      }).join("");
-  }
+  const renderTable = (id, statsObj, key) => renderPickStatTable(id, statsObj, key, people, "Team");
   renderTable("mostPicked", stats, "picked");
   renderTable("mostCorrect", stats, "correct");
   renderTable("mostMissed", stats, "incorrect");

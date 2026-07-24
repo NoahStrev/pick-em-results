@@ -71,7 +71,7 @@
     <div class="subsection-label" style="margin-top: 20px;">Winner Picks</div>
     <div class="grid grid-3col" style="margin-top: 10px;">
       <div class="panel">
-        <span class="tag">FIGHTER PICKS</span>
+        <span class="tag">WINNER PICKS</span>
         <h2>MOST PICKED WINNER</h2>
         <p class="sub">By roommate, this card</p>
         <div class="table-wrap"><table class="pick-log stat-table" id="mostPickedWinner"></table></div>
@@ -224,6 +224,9 @@ function renderCumulative() {
     heatmapEl.appendChild(el);
   }
 
+  // Placeholder calibration (0-15) since there's no real card data yet to
+  // derive it from -- the NFL heatmap's own range (8-22) was fit to that
+  // season's actual score distribution. Revisit once a few real cards exist.
   const vmin = 0, vmax = 15;
   function colorFor(v) {
     const t = Math.max(0, Math.min(1, (v - vmin) / (vmax - vmin)));
@@ -258,15 +261,6 @@ function renderCumulative() {
       heatmapEl.appendChild(cell);
     });
   });
-}
-
-function renderTable(id, statsObj, key) {
-  const el = document.getElementById(id);
-  el.innerHTML = "<tr><th>Roommate</th><th>Pick</th><th>Count</th></tr>" +
-    people.map(p => {
-      const s = statsObj[p]?.[key];
-      return `<tr><td>${p}</td><td>${s ? s.teams.join(", ") : "--"}</td><td>${s ? s.count : "--"}</td></tr>`;
-    }).join("");
 }
 
 // groups one event's picks by fight for the combined grid -- one category-row
@@ -312,19 +306,19 @@ async function renderEventDetail(eventId) {
   const eventPicks = event ? picks.filter(p => p.week === event.label) : [];
 
   const winnerStats = teamPickStats(eventPicks, { questionType: "Winner", field: "pick" });
-  renderTable("mostPickedWinner", winnerStats, "picked");
-  renderTable("mostCorrectWinner", winnerStats, "correct");
-  renderTable("mostMissedWinner", winnerStats, "incorrect");
+  renderPickStatTable("mostPickedWinner", winnerStats, "picked", people, "Fighter");
+  renderPickStatTable("mostCorrectWinner", winnerStats, "correct", people, "Fighter");
+  renderPickStatTable("mostMissedWinner", winnerStats, "incorrect", people, "Fighter");
 
   const methodStats = teamPickStats(eventPicks, { questionType: "Method", field: "pick" });
-  renderTable("mostPickedMethod", methodStats, "picked");
-  renderTable("mostCorrectMethod", methodStats, "correct");
-  renderTable("mostMissedMethod", methodStats, "incorrect");
+  renderPickStatTable("mostPickedMethod", methodStats, "picked", people, "Method");
+  renderPickStatTable("mostCorrectMethod", methodStats, "correct", people, "Method");
+  renderPickStatTable("mostMissedMethod", methodStats, "incorrect", people, "Method");
 
   const roundStats = teamPickStats(eventPicks, { questionType: "Round", field: "pick" });
-  renderTable("mostPickedRound", roundStats, "picked");
-  renderTable("mostCorrectRound", roundStats, "correct");
-  renderTable("mostMissedRound", roundStats, "incorrect");
+  renderPickStatTable("mostPickedRound", roundStats, "picked", people, "Round");
+  renderPickStatTable("mostCorrectRound", roundStats, "correct", people, "Round");
+  renderPickStatTable("mostMissedRound", roundStats, "incorrect", people, "Round");
 
   const fights = eventId ? await loadUfcFights(eventId) : [];
   renderCombinedGrid(fights, eventPicks);
