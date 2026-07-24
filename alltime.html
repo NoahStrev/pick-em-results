@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <title>All-Time -- Roommate Ball Knowledge</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Career pick 'em standings across every season -- total points, weekly wins, and season-by-season history.">
+<meta name="description" content="All-time totals across every contest -- NFL pick 'em, Predictions, and UFC -- plus weekly wins and season-by-season history.">
 <meta property="og:title" content="All-Time -- Roommate Ball Knowledge">
-<meta property="og:description" content="Career pick 'em standings across every season -- total points, weekly wins, and season-by-season history.">
+<meta property="og:description" content="All-time totals across every contest -- NFL pick 'em, Predictions, and UFC -- plus weekly wins and season-by-season history.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%F0%9F%8F%88</text></svg>">
 <link rel="stylesheet" href="style.css">
@@ -35,7 +35,7 @@
     <div class="panel">
       <span class="tag">RANKING</span>
       <h2>CAREER LEADERBOARD</h2>
-      <p class="sub">Total points, summed across every season on record</p>
+      <p class="sub">Total points, combined across NFL pick 'em, Predictions, and UFC</p>
       <div class="chart-wrap short"><canvas id="careerLeaderboardChart"></canvas></div>
     </div>
   </div>
@@ -44,7 +44,7 @@
     <div class="panel">
       <span class="tag">CAREER</span>
       <h2>CAREER TOTALS</h2>
-      <p class="sub">Points, weekly wins, and seasons played, all-time</p>
+      <p class="sub">Total points broken down by contest, plus weekly wins and seasons played, all-time</p>
       <div class="table-wrap"><table class="pick-log stat-table" id="careerStatsTable"></table></div>
     </div>
   </div>
@@ -73,7 +73,7 @@ function renderAllTime(rows, seasons) {
     data: {
       labels: rows.map(r => r.person),
       datasets: [{
-        data: rows.map(r => r.totalPoints),
+        data: rows.map(r => r.grandTotal),
         backgroundColor: rows.map(r => PERSON_COLORS[r.person] || PALETTE.gold), borderRadius: 6,
       }],
     },
@@ -87,8 +87,8 @@ function renderAllTime(rows, seasons) {
   });
 
   const statsEl = document.getElementById("careerStatsTable");
-  statsEl.innerHTML = "<tr><th>Roommate</th><th>Total Points</th><th>Weeks Won</th><th>Seasons Played</th></tr>" +
-    rows.map(r => `<tr><td>${r.person}</td><td><b>${r.totalPoints}</b></td><td>${r.totalWins}</td><td>${r.seasonsPlayed}</td></tr>`).join("");
+  statsEl.innerHTML = "<tr><th>Roommate</th><th>Total Points</th><th>NFL</th><th>Predictions</th><th>UFC</th><th>Weeks Won</th><th>Seasons Played</th></tr>" +
+    rows.map(r => `<tr><td>${r.person}</td><td><b>${formatPoints(r.grandTotal)}</b></td><td>${formatPoints(r.nflPoints)}</td><td>${formatPoints(r.predictionsPoints)}</td><td>${formatPoints(r.ufcPoints)}</td><td>${r.totalWins}</td><td>${r.seasonsPlayed}</td></tr>`).join("");
 
   const historyEl = document.getElementById("seasonHistoryTable");
   historyEl.innerHTML = "<tr><th>Roommate</th>" + seasons.map(s => `<th>${s}</th>`).join("") + "</tr>" +
@@ -104,8 +104,12 @@ function renderAllTime(rows, seasons) {
 
 async function boot() {
   const { seasons } = await loadSeasons();
-  const allSeasonsData = await loadAllSeasonsData(seasons);
-  const rows = careerLeaderboard(allSeasonsData);
+  const [allSeasonsData, allPredictionsData, ufcData] = await Promise.all([
+    loadAllSeasonsData(seasons),
+    loadAllPredictionsData(seasons),
+    loadUfcData(),
+  ]);
+  const rows = grandCareerTotals(careerLeaderboard(allSeasonsData), allPredictionsData, ufcData.weeklyTotals);
   renderAllTime(rows, seasons);
 }
 

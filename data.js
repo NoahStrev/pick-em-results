@@ -220,6 +220,50 @@ function careerLeaderboard(allSeasonsData) {
     .sort((a, b) => b.totalPoints - a.totalPoints);
 }
 
+async function loadAllPredictionsData(seasons) {
+  return Promise.all(seasons.map(s => loadPredictions(s)));
+}
+
+// "All-time total points" per the user's own definition -- everything ever
+// earned across every contest this house runs, not just the NFL pick 'em:
+// NFL weekly pick 'em (careerLeaderboard's totalPoints) + every season's
+// Predictions surveys (preseason/midseason, summed) + UFC's cumulative
+// total to date. Three genuinely different point systems added together,
+// not normalized -- a straight sum, since that's what was asked for.
+// Returns careerRows enriched with nflPoints/predictionsPoints/ufcPoints/
+// grandTotal, re-sorted by grandTotal descending (can reorder relative to
+// NFL-only rank -- e.g. someone who skipped a Predictions survey another
+// person took will fall behind on grandTotal even with a higher NFL total).
+function grandCareerTotals(careerRows, allPredictionsData, ufcWeeklyTotals) {
+  return careerRows
+    .map(row => {
+      let predictionsPoints = 0;
+      for (const data of allPredictionsData) {
+        for (const survey of data.surveys) {
+          const resp = survey.responses.find(r => r.person === row.person);
+          if (resp) predictionsPoints += resp.total;
+        }
+      }
+      const ufcPoints = ufcWeeklyTotals
+        .filter(r => r.person === row.person)
+        .reduce((s, r) => s + r.totalEarned, 0);
+      return {
+        ...row,
+        nflPoints: row.totalPoints,
+        predictionsPoints,
+        ufcPoints,
+        grandTotal: row.totalPoints + predictionsPoints + ufcPoints,
+      };
+    })
+    .sort((a, b) => b.grandTotal - a.grandTotal);
+}
+
+// Whole numbers print bare; anything with Predictions' fractional partial
+// credit rounds to 2 decimals instead of showing a long float artifact.
+function formatPoints(n) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(2);
+}
+
 function weeklyPerformanceSeries(weeklyTotals, weeks, person) {
   const personByWeek = new Map(weeklyTotals.filter(r => r.person === person).map(r => [r.week, r.totalEarned]));
   const personData = weeks.map(w => (personByWeek.has(w) ? personByWeek.get(w) : null));

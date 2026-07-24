@@ -18,10 +18,13 @@ numbered-card pick contest (not season-scoped).
   leaderboard, a question-by-question grid grouped by category, and a
   per-person breakdown.
 - **All-Time** (`alltime.html`): career leaderboard and season-by-season
-  history, aggregated across every season on record.
+  history. "Total Points" is a grand total across every contest the
+  house runs -- NFL pick 'em + Predictions + UFC, summed, with a
+  per-contest breakdown -- not just the NFL season total.
 - **Profile** (`profile.html`): everything about one person in one
-  place -- career totals, this season's League/betting stats, and
-  predictions performance, all behind a single name selector.
+  place -- career totals (same combined NFL + Predictions + UFC total
+  as All-Time), this season's League/betting stats, and predictions
+  performance, all behind a single name selector.
 - **UFC** (`ufc.html`): a separate, never-resetting pick contest for
   numbered UFC cards -- Winner/Method/Round picks per fight, 1 point each.
   Cumulative standings across every card to date, plus a per-card fight-by-

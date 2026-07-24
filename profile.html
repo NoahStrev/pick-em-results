@@ -48,9 +48,12 @@
     <div class="panel">
       <span class="tag">TOTALS</span>
       <h2>ALL-TIME TOTALS</h2>
-      <p class="sub">Summed across every season on record</p>
+      <p class="sub">Every contest this house runs, combined -- NFL pick 'em, Predictions, and UFC</p>
       <div class="stat-list" aria-live="polite">
         <div class="stat-row"><span class="stat-label">Total Points</span><span class="stat-value" id="careerPointsOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">NFL Pick 'Em</span><span class="stat-value" id="careerNflOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">Predictions</span><span class="stat-value" id="careerPredictionsOut">--</span></div>
+        <div class="stat-row"><span class="stat-label">UFC</span><span class="stat-value" id="careerUfcOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Weekly Wins</span><span class="stat-value" id="careerWinsOut">--</span></div>
         <div class="stat-row"><span class="stat-label">Seasons Played</span><span class="stat-value" id="careerSeasonsOut">--</span></div>
       </div>
@@ -157,20 +160,23 @@ function renderHero(person) {
   nameEl.style.color = PERSON_COLORS[person] || PALETTE.gold;
 
   const row = careerRows.find(r => r.person === person);
-  const rank = row ? competitionRank(careerRows, row.totalPoints, "totalPoints") : null;
-  subEl.textContent = row ? `Career #${rank} · ${row.totalPoints} pts all-time` : "";
+  const rank = row ? competitionRank(careerRows, row.grandTotal, "grandTotal") : null;
+  subEl.textContent = row ? `Career #${rank} · ${formatPoints(row.grandTotal)} pts all-time` : "";
 }
 
 function renderCareer(person) {
   const row = careerRows.find(r => r.person === person);
   if (!row) {
-    document.getElementById("careerPointsOut").textContent = "--";
-    document.getElementById("careerWinsOut").textContent = "--";
-    document.getElementById("careerSeasonsOut").textContent = "--";
+    for (const id of ["careerPointsOut", "careerNflOut", "careerPredictionsOut", "careerUfcOut", "careerWinsOut", "careerSeasonsOut"]) {
+      document.getElementById(id).textContent = "--";
+    }
     document.getElementById("seasonHistoryOut").innerHTML = "";
     return;
   }
-  document.getElementById("careerPointsOut").textContent = row.totalPoints;
+  document.getElementById("careerPointsOut").textContent = formatPoints(row.grandTotal);
+  document.getElementById("careerNflOut").textContent = formatPoints(row.nflPoints);
+  document.getElementById("careerPredictionsOut").textContent = formatPoints(row.predictionsPoints);
+  document.getElementById("careerUfcOut").textContent = formatPoints(row.ufcPoints);
   document.getElementById("careerWinsOut").textContent = row.totalWins;
   document.getElementById("careerSeasonsOut").textContent = row.seasonsPlayed;
 
@@ -228,8 +234,12 @@ async function boot() {
 
   wireBetAmountInputs(() => { if (games.length) renderBetting(personSelect.value); });
 
-  const allSeasonsData = await loadAllSeasonsData(seasons);
-  careerRows = careerLeaderboard(allSeasonsData);
+  const [allSeasonsData, allPredictionsData, ufcData] = await Promise.all([
+    loadAllSeasonsData(seasons),
+    loadAllPredictionsData(seasons),
+    loadUfcData(),
+  ]);
+  careerRows = grandCareerTotals(careerLeaderboard(allSeasonsData), allPredictionsData, ufcData.weeklyTotals);
 
   const season = resolveSeason(seasons, defaultSeason);
   seasonSelect.value = season;
