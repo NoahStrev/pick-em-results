@@ -20,7 +20,7 @@
   </div>
   <div class="header-controls">
     <div class="season-select-wrap">
-      <span class="tag blue" style="margin-bottom: 0;">SEASON</span>
+      <span class="tag blue">SEASON</span>
       <select id="seasonSelect" aria-label="Select season"></select>
     </div>
     <nav class="tabs">
@@ -120,7 +120,7 @@
       <h2>WHAT IF EVERY PICK WAS A BET?</h2>
       <p class="sub">Real market moneylines mapped to every pick this season &mdash; a flat bet on each Game Pick, a bigger bonus bet on each Guaranteed Winner/Loser pick. Hypothetical money, not the real points standings.</p>
       <div class="inline-select-wrap">
-        <span class="tag blue" style="margin-bottom: 0;">BET SIZE</span>
+        <span class="tag blue">BET SIZE</span>
         <select id="tierSelect" aria-label="Select bet size tier"></select>
       </div>
       <div class="table-wrap"><table class="pick-log stat-table" id="bettingTable"></table></div>
@@ -278,30 +278,16 @@ function renderLeague(weeklyTotals, picks, people, games) {
   if (games.length) renderBettingTable();
 }
 
-function setSeasonInURL(season) {
-  const url = new URL(location.href);
-  url.searchParams.set("season", season);
-  history.replaceState(null, "", url);
-}
-
-function updateNavLinks(season) {
-  document.getElementById("navLeague").href = `index.html?season=${season}`;
-  document.getElementById("navPlayer").href = `player.html?season=${season}`;
-  document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
-  document.getElementById("navProfile").href = `profile.html?season=${season}`;
-}
-
 async function boot() {
   const { seasons, default: defaultSeason } = await loadSeasons();
   const seasonSelect = document.getElementById("seasonSelect");
-  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+  populateSeasonSelect(seasonSelect, seasons);
 
   const tierSelect = document.getElementById("tierSelect");
   tierSelect.innerHTML = BET_TIERS.map((t, i) => `<option value="${i}">${t.label}</option>`).join("");
   tierSelect.addEventListener("change", () => { if (currentGames.length) renderBettingTable(); });
 
-  let season = new URLSearchParams(location.search).get("season");
-  if (!season || !seasons.includes(season)) season = defaultSeason;
+  const season = resolveSeason(seasons, defaultSeason);
   seasonSelect.value = season;
 
   async function load(season) {

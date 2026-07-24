@@ -19,17 +19,48 @@ async function loadSeasons() {
   return fetch("data/seasons.json").then(r => r.json());
 }
 
+function populateSeasonSelect(seasonSelect, seasons) {
+  seasonSelect.innerHTML = seasons.map(s => `<option value="${s}">${s}</option>`).join("");
+}
+
+// Season from the ?season= URL param if it's one of the known seasons,
+// otherwise the manifest's default.
+function resolveSeason(seasons, defaultSeason) {
+  const season = new URLSearchParams(location.search).get("season");
+  return season && seasons.includes(season) ? season : defaultSeason;
+}
+
+function setSeasonInURL(season) {
+  const url = new URL(location.href);
+  url.searchParams.set("season", season);
+  history.replaceState(null, "", url);
+}
+
+// Shared across every season-aware page's nav (League/Player Spotlight/
+// Predictions/Profile) -- All-Time's link is intentionally static, it's
+// season-agnostic, see its own page.
+function updateNavLinks(season) {
+  document.getElementById("navLeague").href = `index.html?season=${season}`;
+  document.getElementById("navPlayer").href = `player.html?season=${season}`;
+  document.getElementById("navPredictions").href = `predictions.html?season=${season}`;
+  document.getElementById("navProfile").href = `profile.html?season=${season}`;
+}
+
 async function loadPredictions(season) {
   const res = await fetch(`data/${season}/predictions.json`);
   return res.ok ? await res.json() : { surveys: [] };
 }
 
+// Competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential
+// position -- 1 + how many rows strictly beat `value` on `key`.
+function competitionRank(rows, value, key) {
+  return 1 + rows.filter(r => r[key] > value).length;
+}
+
 function predictionsRank(survey, person) {
   const resp = survey.responses.find(r => r.person === person);
   if (!resp) return null;
-  // competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential position
-  const rank = 1 + survey.responses.filter(r => r.total > resp.total).length;
-  return { rank, total: resp.total, possible: resp.possible };
+  return { rank: competitionRank(survey.responses, resp.total, "total"), total: resp.total, possible: resp.possible };
 }
 
 async function loadData(season) {
@@ -138,8 +169,7 @@ function seasonRank(weeklyTotals, people, person) {
   const board = finalLeaderboard(weeklyTotals, people);
   const mine = board.find(r => r.person === person);
   if (!mine) return null;
-  // competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential position
-  return 1 + board.filter(r => r.points > mine.points).length;
+  return competitionRank(board, mine.points, "points");
 }
 
 function seasonPoints(weeklyTotals, person) {
@@ -203,6 +233,16 @@ const BET_TIERS = [
 
 function formatMoney(n) {
   return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// green/red stat-value class for a signed dollar amount (win/loss/push)
+function moneyClass(n) {
+  return n > 0 ? "green" : n < 0 ? "red" : "";
+}
+
+// "Team, Team (count)" for a teamPickStats() top-of entry, or "--" if none
+function formatTeamStat(s) {
+  return s ? `${s.teams.join(", ")} (${s.count})` : "--";
 }
 
 function decimalOdds(moneyline) {

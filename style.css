@@ -72,6 +72,16 @@ nav.tabs {
 }
 .inline-select-wrap select { min-width: 0; padding: 8px 12px; font-size: 13px; }
 
+/* a control-label tag (SEASON/NAME FILTER/BET SIZE/...) always sits inline
+   next to its select inside one of these two wrappers, where .tag's own
+   default margin-bottom (meant for a tag stacked above an <h2>) would add
+   unwanted vertical space -- was previously a `style="margin-bottom: 0"`
+   repeated on every single one of these tags across every page */
+.season-select-wrap .tag,
+.inline-select-wrap .tag {
+  margin-bottom: 0;
+}
+
 nav.tabs a {
   color: var(--muted);
   text-decoration: none;
