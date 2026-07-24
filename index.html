@@ -133,9 +133,7 @@
 
 <script src="data.js"></script>
 <script>
-Chart.defaults.color = PALETTE.muted;
-Chart.defaults.borderColor = "#2B3D5E";
-Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+initChartDefaults();
 
 let standingsChart = null, leaderboardChart = null;
 let currentGames = [], currentPicks = [], currentPeople = [];

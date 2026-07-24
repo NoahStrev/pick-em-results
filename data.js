@@ -11,6 +11,14 @@ const PERSON_COLORS = {
   "Noah Streveler": "#D4A5F5",
 };
 
+// Shared Chart.js defaults -- identical on every page that renders a chart
+// (League, Player Spotlight, Predictions, All-Time).
+function initChartDefaults() {
+  Chart.defaults.color = PALETTE.muted;
+  Chart.defaults.borderColor = "#2B3D5E";
+  Chart.defaults.font.family = "-apple-system, Segoe UI, Arial, sans-serif";
+}
+
 function toObjects({ fields, rows }) {
   return rows.map(row => Object.fromEntries(fields.map((f, i) => [f, row[i]])));
 }
@@ -255,6 +263,46 @@ function moneyClass(n) {
 // "Team, Team (count)" for a teamPickStats() top-of entry, or "--" if none
 function formatTeamStat(s) {
   return s ? `${s.teams.join(", ")} (${s.count})` : "--";
+}
+
+// Shared season-stats block: KPI row (rank/points/accuracy/wins/best week) plus
+// team-pick-stat rows (Game Pick, Guaranteed Winner, Guaranteed Loser) -- same
+// DOM ids/markup on Player Spotlight and Profile's "this season" section.
+function renderSeasonStats(weeklyTotals, picks, people, person) {
+  document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
+  document.getElementById("kpiPoints").textContent = seasonPoints(weeklyTotals, person);
+  const acc = pickAccuracy(picks, person);
+  document.getElementById("kpiAccuracy").textContent = acc === null ? "--" : Math.round(acc * 100) + "%";
+  document.getElementById("kpiWins").textContent = weeklyWinsCount(weeklyTotals, person);
+  document.getElementById("kpiBest").textContent = bestWeekScore(weeklyTotals, person);
+
+  const stats = teamPickStats(picks, { person })[person] || {};
+  document.getElementById("mostPickedOut").textContent = formatTeamStat(stats.picked);
+  document.getElementById("mostCorrectOut").textContent = formatTeamStat(stats.correct);
+  document.getElementById("mostMissedOut").textContent = formatTeamStat(stats.incorrect);
+
+  const gwStats = teamPickStats(picks, { person, questionType: "Weekly Winner Prediction" })[person] || {};
+  document.getElementById("mostPickedGWOut").textContent = formatTeamStat(gwStats.picked);
+  document.getElementById("mostWrongGWOut").textContent = formatTeamStat(gwStats.incorrect);
+
+  const glStats = teamPickStats(picks, { person, questionType: "Weekly Loser Prediction" })[person] || {};
+  document.getElementById("mostPickedGLOut").textContent = formatTeamStat(glStats.picked);
+  document.getElementById("mostWrongGLOut").textContent = formatTeamStat(glStats.incorrect);
+}
+
+// Shared betting-KPI stat-row rendering (betGameOut/betBonusOut/betTotalOut) --
+// identical on Player Spotlight and Profile; each page builds its own totals
+// (and, on Player Spotlight, its own cumulative chart) around this.
+function renderBettingStatRows(gameTotal, bonusTotal, total) {
+  const gameEl = document.getElementById("betGameOut");
+  gameEl.textContent = formatMoney(gameTotal);
+  gameEl.className = "stat-value " + moneyClass(gameTotal);
+  const bonusEl = document.getElementById("betBonusOut");
+  bonusEl.textContent = formatMoney(bonusTotal);
+  bonusEl.className = "stat-value " + moneyClass(bonusTotal);
+  const totalEl = document.getElementById("betTotalOut");
+  totalEl.textContent = formatMoney(total);
+  totalEl.className = "stat-value " + moneyClass(total);
 }
 
 function decimalOdds(moneyline) {

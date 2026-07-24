@@ -186,15 +186,7 @@ function renderBetting(person) {
   const bonusTotal = units.bonus * tier.bonus;
   const total = gameTotal + bonusTotal;
 
-  const gameEl = document.getElementById("betGameOut");
-  gameEl.textContent = formatMoney(gameTotal);
-  gameEl.className = "stat-value " + moneyClass(gameTotal);
-  const bonusEl = document.getElementById("betBonusOut");
-  bonusEl.textContent = formatMoney(bonusTotal);
-  bonusEl.className = "stat-value " + moneyClass(bonusTotal);
-  const totalEl = document.getElementById("betTotalOut");
-  totalEl.textContent = formatMoney(total);
-  totalEl.className = "stat-value " + moneyClass(total);
+  renderBettingStatRows(gameTotal, bonusTotal, total);
 }
 
 function renderThisSeason(person) {
@@ -204,25 +196,7 @@ function renderThisSeason(person) {
     for (const id of ["betGameOut", "betBonusOut", "betTotalOut"]) { const el = document.getElementById(id); el.textContent = "--"; el.className = "stat-value"; }
     return;
   }
-  document.getElementById("kpiRank").textContent = "#" + seasonRank(weeklyTotals, people, person);
-  document.getElementById("kpiPoints").textContent = seasonPoints(weeklyTotals, person);
-  const acc = pickAccuracy(picks, person);
-  document.getElementById("kpiAccuracy").textContent = acc === null ? "--" : Math.round(acc * 100) + "%";
-  document.getElementById("kpiWins").textContent = weeklyWinsCount(weeklyTotals, person);
-  document.getElementById("kpiBest").textContent = bestWeekScore(weeklyTotals, person);
-
-  const stats = teamPickStats(picks, { person })[person] || {};
-  document.getElementById("mostPickedOut").textContent = formatTeamStat(stats.picked);
-  document.getElementById("mostCorrectOut").textContent = formatTeamStat(stats.correct);
-  document.getElementById("mostMissedOut").textContent = formatTeamStat(stats.incorrect);
-
-  const gwStats = teamPickStats(picks, { person, questionType: "Weekly Winner Prediction" })[person] || {};
-  document.getElementById("mostPickedGWOut").textContent = formatTeamStat(gwStats.picked);
-  document.getElementById("mostWrongGWOut").textContent = formatTeamStat(gwStats.incorrect);
-
-  const glStats = teamPickStats(picks, { person, questionType: "Weekly Loser Prediction" })[person] || {};
-  document.getElementById("mostPickedGLOut").textContent = formatTeamStat(glStats.picked);
-  document.getElementById("mostWrongGLOut").textContent = formatTeamStat(glStats.incorrect);
+  renderSeasonStats(weeklyTotals, picks, people, person);
 
   if (games.length) renderBetting(person);
 }
