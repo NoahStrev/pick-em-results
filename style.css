@@ -28,7 +28,7 @@ header.top {
 }
 
 header.top h1 {
-  font-family: Impact, "Arial Narrow Bold", sans-serif;
+  font-family: Anton, Impact, "Arial Narrow Bold", sans-serif;
   font-weight: normal;
   letter-spacing: 1px;
   color: var(--gold);
@@ -151,7 +151,7 @@ main {
 .tag.blue { background: var(--blue); }
 
 .panel h2 {
-  font-family: Impact, "Arial Narrow Bold", sans-serif;
+  font-family: Anton, Impact, "Arial Narrow Bold", sans-serif;
   font-weight: normal;
   letter-spacing: 0.5px;
   font-size: 22px;
@@ -173,7 +173,7 @@ main {
    page reads as "whose page this is" instead of just a data dump */
 .profile-hero { padding: 26px 24px; }
 .profile-name {
-  font-family: Impact, "Arial Narrow Bold", sans-serif;
+  font-family: Anton, Impact, "Arial Narrow Bold", sans-serif;
   font-weight: normal;
   letter-spacing: 0.5px;
   font-size: 38px;
@@ -295,7 +295,7 @@ select, .select {
 
 .kpi .tag { margin-bottom: 12px; }
 .kpi .value {
-  font-family: Impact, sans-serif;
+  font-family: Anton, Impact, "Arial Narrow Bold", sans-serif;
   font-size: 34px;
   color: var(--gold);
 }
