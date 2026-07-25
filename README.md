@@ -15,8 +15,10 @@ numbered-card pick contest (not season-scoped).
 - **Predictions** (`predictions.html`): graded preseason and midseason
   prediction contests (NFL/NCAA awards, playoff results, Carroll
   University-specific questions), both surveys shown together -- a
-  leaderboard, a question-by-question grid grouped by category, and a
-  per-person breakdown.
+  leaderboard, a question-by-question grid grouped by category, a
+  per-person breakdown, and hypothetical betting P/L against real
+  historical sportsbook odds (optional per season, only for questions
+  where a real market was found -- see `predictions_odds.json` below).
 - **All-Time** (`alltime.html`): career leaderboard and season-by-season
   history. "Total Points" is a grand total across every contest the
   house runs -- NFL pick 'em + Predictions + UFC, summed, with a
@@ -32,8 +34,11 @@ numbered-card pick contest (not season-scoped).
 
 Static site, no backend -- data is exported from a season-tracking workbook
 into per-season JSON files under `data/<season>/` (`weekly_totals.json`,
-`picks.json`, optionally `games.json` for betting odds and
-`predictions.json` for that season's prediction contests), loaded
+`picks.json`, optionally `games.json` for NFL betting odds,
+`predictions.json` for that season's prediction contests, and
+`predictions_odds.json` for the Predictions page's own betting feature --
+built by `predictions-survey/grade.py` from a hand-compiled `odds.py`,
+same optional/graceful-degradation pattern as `games.json`), loaded
 client-side. `data/seasons.json` lists which seasons exist; add a new one
 there once its export lands, no code changes needed for the season-aware
 pages -- All-Time and Profile's career section pick it up automatically too.

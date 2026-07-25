@@ -1,0 +1,224 @@
+{
+ "textOdds": {
+  "preseason": {
+   "best_nfc_north": {
+    "bears": 600,
+    "lions": 190,
+    "packers": 165
+   },
+   "best_nfc": {
+    "eagles": 300,
+    "packers": 1000
+   },
+   "worst_nfc": {
+    "giants": 600,
+    "saints": 400
+   },
+   "nfc_champ": {
+    "eagles": 300,
+    "lions": 475,
+    "packers": 1000,
+    "rams": 1100
+   },
+   "worst_afc": {
+    "browns": 400,
+    "colts": 1500,
+    "jets": 900
+   },
+   "best_afc": {
+    "bills": 350,
+    "ravens": 350
+   },
+   "afc_champ": {
+    "bills": 350,
+    "ravens": 350
+   },
+   "super_bowl_champ": {
+    "bills": 600,
+    "packers": 1300
+   },
+   "mvp": {
+    "joe burrow": 600
+   },
+   "oroy": {
+    "ashton jeanty": 260,
+    "cam ward": 350
+   },
+   "dpoy": {
+    "aidan hutchinson": 700,
+    "t.j. watt": 900,
+    "will anderson jr": 1200,
+    "edgerrin cooper": 10000
+   },
+   "opoy": {
+    "ja'marr chase": 900,
+    "saquon barkley": 550
+   },
+   "coy": {
+    "ben johnson": 750,
+    "mike macdonald": 2000,
+    "mike vrabel": 750
+   },
+   "protector_poy": {
+    "joe alt": 1500,
+    "joe thuney": 3000,
+    "penei sewell": 600
+   },
+   "comeback_poy": {
+    "aidan hutchinson": 260
+   },
+   "droy": {
+    "abdul carter": 250
+   },
+   "passing_yards_leader": {
+    "joe burrow": 550,
+    "caleb williams": 3200,
+    "justin herbert": 2000
+   },
+   "passing_td_leader": {
+    "joe burrow": 550,
+    "jared goff": 1000,
+    "jordan love": 2000
+   },
+   "int_leader": {
+    "cameron ward": 1000,
+    "trevor lawrence": 1500
+   },
+   "receiving_yards_leader": {
+    "ja'marr chase": 600,
+    "nico collins": 750,
+    "ceedee lamb": 1000,
+    "malik nabers": 1000
+   },
+   "rushing_yards_leader": {
+    "saquon barkley": 250,
+    "jonathan taylor": 1100
+   },
+   "big_ten_champ": {
+    "ohio state": 200,
+    "wisconsin": 15000
+   },
+   "sec_champ": {
+    "georgia": 390,
+    "texas": 210,
+    "lsu": 1000
+   },
+   "acc_champ": {
+    "clemson": 105
+   },
+   "big12_champ": {
+    "kansas state": 600,
+    "baylor": 600,
+    "utah": 600
+   },
+   "heisman": {
+    "jeremiah smith": 1100,
+    "cade klubnik": 900
+   },
+   "cfb_champ": {
+    "ohio state": 550,
+    "texas": 550,
+    "georgia": 650
+   }
+  },
+  "midseason": {
+   "nfc_north_winner": {
+    "bears": 390,
+    "packers": 135
+   },
+   "nfc_south_winner": {
+    "buccaneers": 115,
+    "panthers": 300
+   },
+   "nfc_west_winner": {
+    "rams": -240
+   },
+   "afc_north_winner": {
+    "ravens": -290,
+    "steelers": 160
+   },
+   "afc_south_winner": {
+    "colts": 400
+   },
+   "afc_east_winner": {
+    "patriots": -235
+   },
+   "nfc_1_seed": {
+    "eagles": 190,
+    "rams": 230
+   },
+   "afc_1_seed": {
+    "broncos": 500,
+    "patriots": 500
+   },
+   "afc_champ": {
+    "broncos": 500,
+    "patriots": 500,
+    "ravens": 550,
+    "steelers": 3500
+   },
+   "super_bowl_champ": {
+    "packers": 900,
+    "patriots": 1100,
+    "rams": 460
+   },
+   "mvp": {
+    "drake maye": 185,
+    "matthew stafford": 150
+   },
+   "opoy": {
+    "jonathan taylor": -135
+   },
+   "droy": {
+    "carson schwesinger": -350
+   },
+   "comeback_poy": {
+    "aidan hutchinson": 4000,
+    "christian mccaffrey": 130,
+    "dak prescott": -170
+   },
+   "big_ten_champ": {
+    "indiana": 145,
+    "ohio state": -150
+   },
+   "sec_champ": {
+    "alabama": 200,
+    "ole miss": 1400,
+    "texas a&m": 165
+   },
+   "acc_champ": {
+    "miami": 650,
+    "pittsburgh": 1200,
+    "smu": -105,
+    "virginia": 185
+   },
+   "big12_champ": {
+    "texas tech": -360
+   },
+   "heisman": {
+    "fernando mendoza": -115,
+    "jeremiyah love": 350
+   },
+   "cfb_champ": {
+    "ohio state": 160,
+    "texas a&m": 1000
+   }
+  }
+ },
+ "winTotals": {
+  "preseason": {
+   "packers_record": {
+    "line": 10.5,
+    "over_odds": 105,
+    "under_odds": -125,
+    "actual_wins": 9
+   },
+   "bears_record": {
+    "line": 8.5,
+    "over_odds": 125,
+    "under_odds": -150,
+    "actual_wins": 11
+   }
+  }
+ }
+}

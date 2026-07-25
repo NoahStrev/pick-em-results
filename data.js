@@ -60,6 +60,15 @@ async function loadPredictions(season) {
   return res.ok ? await res.json() : { surveys: [] };
 }
 
+// Optional per-season file (site/data/<season>/predictions_odds.json) -- a
+// season with no hand-compiled odds just means the Predictions page's
+// betting section doesn't render, same "gracefully missing" pattern as
+// games.json for the NFL side.
+async function loadPredictionsOdds(season) {
+  const res = await fetch(`data/${season}/predictions_odds.json`);
+  return res.ok ? await res.json() : { textOdds: {}, winTotals: {} };
+}
+
 // Competition ranking: ties share a rank (e.g. 1,2,2,4), not sequential
 // position -- 1 + how many rows strictly beat `value` on `key`.
 function competitionRank(rows, value, key) {
@@ -70,6 +79,74 @@ function predictionsRank(survey, person) {
   const resp = survey.responses.find(r => r.person === person);
   if (!resp) return null;
   return { rank: competitionRank(survey.responses, resp.total, "total"), total: resp.total, possible: resp.possible };
+}
+
+// -- Predictions hypothetical betting --
+// Treats each prediction question with a real, sourced sportsbook odds
+// entry (predictions_odds.json) as a flat futures bet -- pick the right
+// outcome and it pays like a real moneyline bet, same math as the NFL
+// betting feature (decimalOdds/pickUnitProfit). A question with no real
+// odds found simply doesn't participate, same as Carroll questions never
+// having odds at all -- not an error, not a fabricated number.
+
+// Mirrors predictions-survey/grade.py's norm() -- strip a trailing
+// "(...)" annotation, lowercase, trim -- so "Mike Vrabel (Patriots)"
+// matches an odds key of "mike vrabel".
+function normalizePickName(s) {
+  return String(s || "").replace(/\s*\([^)]*\)\s*$/, "").trim().toLowerCase();
+}
+
+// "11-6" -> 11, "9-7-1" -> 9 -- the wins component of a guessed record,
+// for grading a Packers/Bears "what will their record be" question as an
+// Over/Under bet against the real preseason win-total line.
+function parseWinsFromRecord(s) {
+  const m = String(s || "").match(/^\s*(\d+)/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+function winTotalPickProfit(givenRecord, wt) {
+  const wins = parseWinsFromRecord(givenRecord);
+  if (wins === null) return null;
+  const pickedOver = wins > wt.line;
+  const actualOver = wt.actual_wins > wt.line;
+  const odds = pickedOver ? wt.over_odds : wt.under_odds;
+  return pickedOver === actualOver ? decimalOdds(odds) - 1 : -1;
+}
+
+// { person -> total profit/loss } for one survey at a given flat bet size.
+function predictionsBettingTotals(survey, oddsData, betAmount) {
+  const textOdds = (oddsData.textOdds && oddsData.textOdds[survey.id]) || {};
+  const winTotals = (oddsData.winTotals && oddsData.winTotals[survey.id]) || {};
+  const out = {};
+  for (const resp of survey.responses) {
+    let total = 0;
+    for (const q of survey.questions) {
+      const given = resp.answers[q.id];
+      if (given == null || Array.isArray(given)) continue; // no odds for multi-select questions
+      let unitProfit = null;
+      if (winTotals[q.id]) {
+        unitProfit = winTotalPickProfit(given, winTotals[q.id]);
+      } else if (textOdds[q.id]) {
+        const odds = textOdds[q.id][normalizePickName(given)];
+        if (odds !== undefined) {
+          const correct = resp.scores[q.id] >= q.points;
+          unitProfit = correct ? decimalOdds(odds) - 1 : -1;
+        }
+      }
+      if (unitProfit !== null) total += unitProfit * betAmount;
+    }
+    out[resp.person] = total;
+  }
+  return out;
+}
+
+// How many questions in a survey actually had a real odds entry -- shown
+// in the UI so "N of M questions" is honest about partial coverage
+// instead of implying every question was bettable.
+function predictionsBettableQuestionCount(survey, oddsData) {
+  const textOdds = (oddsData.textOdds && oddsData.textOdds[survey.id]) || {};
+  const winTotals = (oddsData.winTotals && oddsData.winTotals[survey.id]) || {};
+  return survey.questions.filter(q => textOdds[q.id] || winTotals[q.id]).length;
 }
 
 async function loadData(season) {
