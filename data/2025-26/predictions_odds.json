@@ -150,6 +150,9 @@
    "afc_west_winner": {
     "broncos": 120
    },
+   "nfc_east_winner": {
+    "eagles": -900
+   },
    "nfc_1_seed": {
     "eagles": 190,
     "rams": 230
@@ -174,13 +177,15 @@
     "matthew stafford": 150
    },
    "opoy": {
-    "jonathan taylor": -135
+    "jonathan taylor": -135,
+    "christian mccaffrey": 1329
    },
    "dpoy": {
     "myles garrett": -200
    },
    "oroy": {
-    "tetairoa mcmillan": 120
+    "tetairoa mcmillan": 120,
+    "tyler warren": 600
    },
    "droy": {
     "carson schwesinger": -350
