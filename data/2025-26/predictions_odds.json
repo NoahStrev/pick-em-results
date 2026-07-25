@@ -37,6 +37,10 @@
     "bills": 600,
     "packers": 1300
    },
+   "super_bowl_mvp": {
+    "jordan love": 1800,
+    "josh allen": 600
+   },
    "mvp": {
     "joe burrow": 600
    },
@@ -143,6 +147,9 @@
    "afc_east_winner": {
     "patriots": -235
    },
+   "afc_west_winner": {
+    "broncos": 120
+   },
    "nfc_1_seed": {
     "eagles": 190,
     "rams": 230
@@ -169,8 +176,18 @@
    "opoy": {
     "jonathan taylor": -135
    },
+   "dpoy": {
+    "myles garrett": -200
+   },
+   "oroy": {
+    "tetairoa mcmillan": 120
+   },
    "droy": {
     "carson schwesinger": -350
+   },
+   "coy": {
+    "mike vrabel": -195,
+    "ben johnson": 250
    },
    "comeback_poy": {
     "aidan hutchinson": 4000,
