@@ -140,13 +140,32 @@ function predictionsBettingTotals(survey, oddsData, betAmount) {
   return out;
 }
 
-// How many questions in a survey actually had a real odds entry -- shown
-// in the UI so "N of M questions" is honest about partial coverage
-// instead of implying every question was bettable.
-function predictionsBettableQuestionCount(survey, oddsData) {
+// Counts actual (person, question) bets placed vs. every eligible
+// opportunity (excludes multi-select/Carroll questions, which never have
+// odds at all). Deliberately per-bet, not per-question: a question having
+// *some* real odds doesn't mean every respondent's specific pick was on
+// the board -- e.g. Interceptions Leader is a real, bettable market, but
+// only 2 of 5 people's actual picks (Cameron Ward, Trevor Lawrence) had a
+// findable price; the other 3 (Geno Smith, Jameis Winston, Caleb
+// Williams) didn't. A per-question count would call that one question
+// "bettable" and overstate how much of it actually resolved into a bet.
+function predictionsBetCoverage(survey, oddsData) {
   const textOdds = (oddsData.textOdds && oddsData.textOdds[survey.id]) || {};
   const winTotals = (oddsData.winTotals && oddsData.winTotals[survey.id]) || {};
-  return survey.questions.filter(q => textOdds[q.id] || winTotals[q.id]).length;
+  let placed = 0, eligible = 0;
+  for (const resp of survey.responses) {
+    for (const q of survey.questions) {
+      const given = resp.answers[q.id];
+      if (given == null || Array.isArray(given)) continue;
+      eligible++;
+      if (winTotals[q.id]) {
+        if (parseWinsFromRecord(given) !== null) placed++;
+      } else if (textOdds[q.id] && textOdds[q.id][normalizePickName(given)] !== undefined) {
+        placed++;
+      }
+    }
+  }
+  return { placed, eligible };
 }
 
 async function loadData(season) {

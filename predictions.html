@@ -289,9 +289,9 @@ function renderBettingTable(survey, suffix) {
   el.innerHTML = "<tr><th>Roommate</th><th>P/L</th></tr>" +
     rows.map(r => `<tr><td>${r.person}</td><td class="${cls(r.total)}"><b>${formatMoney(r.total)}</b></td></tr>`).join("");
 
-  const bettable = predictionsBettableQuestionCount(survey, predictionsOddsData);
+  const { placed, eligible } = predictionsBetCoverage(survey, predictionsOddsData);
   document.getElementById(`bettingSub-${suffix}`).textContent =
-    `If every pick with real sportsbook odds were a bet -- ${bettable} of ${survey.questions.length} questions have odds available`;
+    `If every pick with real sportsbook odds were a bet -- ${placed} of ${eligible} picks had real odds available`;
 }
 
 function renderBetting() {
