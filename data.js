@@ -9,6 +9,7 @@ const PERSON_COLORS = {
   "Jacob Dyce": "#6C9BF5",
   "Nick Kerkhoff": "#F06B70",
   "Noah Streveler": "#D4A5F5",
+  "Caden Miller": "#4ECDC4",
 };
 
 // Shared Chart.js defaults -- identical on every page that renders a chart
