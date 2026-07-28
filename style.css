@@ -122,7 +122,7 @@ main {
 .grid-2col-even { grid-template-columns: repeat(2, 1fr); }
 .grid-3col { grid-template-columns: repeat(3, 1fr); }
 .grid-1col { grid-template-columns: 1fr; }
-.grid-top { align-items: start; }
+.grid-top { align-items: center; }
 
 .panel {
   background: var(--panel);
@@ -347,6 +347,16 @@ table.pick-log.sticky-head th {
   max-height: 65vh;
   overflow-y: auto;
 }
+
+/* opt-in: a shorter scroll-box for a detail table that sits beside a
+   naturally-compact sidebar panel (e.g. Predictions' per-person Answer Log
+   next to its 4-5-row Category Breakdown) -- the default 65vh was sized for
+   the Combined View's full-width grids, which have no neighboring panel to
+   look mismatched against; paired with a short sidebar it left 250px+ of
+   empty space below the sidebar. The underlying table (34-36 rows) still
+   needs scrolling either way at any reasonable height -- this only changes
+   how much is visible before that kicks in, not whether it's needed. */
+.table-wrap.scroll-box.compact { max-height: 40vh; }
 
 table.pick-log {
   width: 100%;
