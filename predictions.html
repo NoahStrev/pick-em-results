@@ -64,8 +64,8 @@
   <div class="grid grid-1col" style="margin-top: 10px;">
     <div class="panel">
       <span class="tag">EVERYONE</span>
-      <h2>QUESTION BY QUESTION</h2>
-      <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
+      <h2>PRESEASON &mdash; QUESTION BY QUESTION</h2>
+      <p class="sub">Every question, the correct answer, the odds on it (where a real market existed), and how everyone answered &mdash; grouped by category</p>
       <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predGridTable-preseason"></table></div>
     </div>
   </div>
@@ -74,8 +74,8 @@
   <div class="grid grid-1col" style="margin-top: 10px;">
     <div class="panel">
       <span class="tag">EVERYONE</span>
-      <h2>QUESTION BY QUESTION</h2>
-      <p class="sub">Every question, the correct answer, and how everyone answered &mdash; grouped by category</p>
+      <h2>MIDSEASON &mdash; QUESTION BY QUESTION</h2>
+      <p class="sub">Every question, the correct answer, the odds on it (where a real market existed), and how everyone answered &mdash; grouped by category</p>
       <div class="table-wrap scroll-box"><table class="pick-log wrap-cells sticky-head" id="predGridTable-midseason"></table></div>
     </div>
   </div>
@@ -95,13 +95,13 @@
   <div class="grid grid-2col grid-top" style="margin-top: 20px;">
     <div class="panel">
       <span class="tag">DETAIL</span>
-      <h2>ANSWER LOG</h2>
+      <h2>PRESEASON ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
       <div class="table-wrap scroll-box compact"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-preseason"></table></div>
     </div>
     <div class="panel">
       <span class="tag">BREAKDOWN</span>
-      <h2>BY CATEGORY</h2>
+      <h2>PRESEASON BY CATEGORY</h2>
       <p class="sub">Score within each question category</p>
       <div class="stat-list" id="predCategoryBreakdown-preseason" aria-live="polite"></div>
     </div>
@@ -116,13 +116,13 @@
   <div class="grid grid-2col grid-top" style="margin-top: 20px;">
     <div class="panel">
       <span class="tag">DETAIL</span>
-      <h2>ANSWER LOG</h2>
+      <h2>MIDSEASON ANSWER LOG</h2>
       <p class="sub">Every question this roommate answered, right or wrong</p>
       <div class="table-wrap scroll-box compact"><table class="pick-log wrap-cells sticky-head" id="predAnswerLog-midseason"></table></div>
     </div>
     <div class="panel">
       <span class="tag">BREAKDOWN</span>
-      <h2>BY CATEGORY</h2>
+      <h2>MIDSEASON BY CATEGORY</h2>
       <p class="sub">Score within each question category</p>
       <div class="stat-list" id="predCategoryBreakdown-midseason" aria-live="polite"></div>
     </div>
@@ -168,6 +168,37 @@ function scoreClass(score, points) {
 
 function fmtAnswer(v) {
   return Array.isArray(v) ? (v.length ? v.join(", ") : "--") : (v || "--");
+}
+
+const SURVEY_LABELS = { preseason: "Preseason", midseason: "Midseason" };
+
+function fmtOdds(n) {
+  return n > 0 ? `+${n}` : `${n}`;
+}
+
+// The odds on the answer that actually turned out correct -- not any
+// respondent's pick. A genuinely multi-answer question (more than one
+// correct value, e.g. a division-worst tie) doesn't have a single
+// winning price -- but the answer key stores every fact as an array
+// for consistency even when there's only one correct value (e.g.
+// best_nfc_north's ["Bears"]), so only bail out above 1 element, not
+// for arrays in general. Win-total questions (packers_record/
+// bears_record) use the Over/Under line instead of a pick-to-win market.
+function winningOdds(q, survey, oddsData) {
+  const answer = Array.isArray(q.answer)
+    ? (q.answer.length === 1 ? q.answer[0] : null)
+    : q.answer;
+  if (answer === null) return null;
+  const winTotals = (oddsData.winTotals && oddsData.winTotals[survey.id]) || {};
+  const wt = winTotals[q.id];
+  if (wt) {
+    const actualOver = wt.actual_wins > wt.line;
+    return (actualOver ? "Over " : "Under ") + fmtOdds(actualOver ? wt.over_odds : wt.under_odds);
+  }
+  const textOdds = (oddsData.textOdds && oddsData.textOdds[survey.id]) || {};
+  const qOdds = textOdds[q.id];
+  const odds = qOdds ? qOdds[normalizePickName(answer)] : undefined;
+  return odds === undefined ? null : fmtOdds(odds);
 }
 
 function surveyById(id) {
@@ -219,9 +250,9 @@ function groupByCategory(questions) {
 function renderGrid(survey, suffix) {
   const people = survey.responses.map(r => r.person);
   const byPerson = Object.fromEntries(survey.responses.map(r => [r.person, r]));
-  const colspan = people.length + 2;
+  const colspan = people.length + 3;
   const el = document.getElementById(`predGridTable-${suffix}`);
-  el.innerHTML = "<tr><th>Question</th><th>Correct Answer</th>" +
+  el.innerHTML = `<tr><th>${SURVEY_LABELS[suffix]} Question</th><th>Correct Answer</th><th>Winning Odds</th>` +
     people.map(p => `<th>${p}</th>`).join("") + "</tr>" +
     groupByCategory(survey.questions).map(([category, questions]) =>
       `<tr class="category-row"><td colspan="${colspan}">${category}</td></tr>` +
@@ -232,7 +263,8 @@ function renderGrid(survey, suffix) {
           const score = r.scores[q.id];
           return `<td class="${scoreClass(score, q.points)}">${fmtAnswer(given)}</td>`;
         }).join("");
-        return `<tr><td>${q.text}</td><td>${fmtAnswer(q.answer)}</td>${cells}</tr>`;
+        const odds = winningOdds(q, survey, predictionsOddsData);
+        return `<tr><td>${q.text}</td><td>${fmtAnswer(q.answer)}</td><td>${odds ?? "--"}</td>${cells}</tr>`;
       }).join("")
     ).join("");
 }
@@ -244,7 +276,7 @@ function renderIndividual(survey, person, suffix) {
     document.getElementById(`kpiRank-${suffix}`).textContent = "--";
     document.getElementById(`kpiScore-${suffix}`).textContent = "--";
     document.getElementById(`kpiPct-${suffix}`).textContent = "--";
-    document.getElementById(`predAnswerLog-${suffix}`).innerHTML = "<tr><th colspan=\"4\">DNP &mdash; didn't take this survey</th></tr>";
+    document.getElementById(`predAnswerLog-${suffix}`).innerHTML = `<tr><th colspan="4">DNP &mdash; didn't take the ${SURVEY_LABELS[suffix]} survey</th></tr>`;
     document.getElementById(`predCategoryBreakdown-${suffix}`).innerHTML = "";
     return;
   }
@@ -256,7 +288,7 @@ function renderIndividual(survey, person, suffix) {
   document.getElementById(`kpiPct-${suffix}`).textContent = Math.round((resp.total / resp.possible) * 100) + "%";
 
   const logEl = document.getElementById(`predAnswerLog-${suffix}`);
-  logEl.innerHTML = "<tr><th>Question</th><th>Answer</th><th>Correct Answer</th><th>Points</th></tr>" +
+  logEl.innerHTML = `<tr><th>${SURVEY_LABELS[suffix]} Question</th><th>Answer</th><th>Correct Answer</th><th>Points</th></tr>` +
     survey.questions.map(q => {
       const given = resp.answers[q.id];
       const score = resp.scores[q.id];
