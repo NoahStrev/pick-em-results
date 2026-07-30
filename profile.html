@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <header class="top">
@@ -65,6 +66,7 @@
       <span class="tag">HISTORY</span>
       <h2>SEASON BY SEASON</h2>
       <p class="sub">Final rank and points, per season</p>
+      <div class="chart-wrap short"><canvas id="seasonHistoryChart"></canvas></div>
       <div class="stat-list" id="seasonHistoryOut" aria-live="polite"></div>
     </div>
   </div>
@@ -133,6 +135,7 @@
         <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-preseason">--</div></div>
         <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-preseason">--</div></div>
       </div>
+      <div class="stat-list" id="predBettingRow-preseason" aria-live="polite"></div>
     </div>
     <div class="panel">
       <span class="tag">SURVEY</span>
@@ -143,6 +146,7 @@
         <div class="kpi"><span class="tag">SCORE</span><div class="value small" id="predScore-midseason">--</div></div>
         <div class="kpi"><span class="tag green">PCT</span><div class="value small" id="predPct-midseason">--</div></div>
       </div>
+      <div class="stat-list" id="predBettingRow-midseason" aria-live="polite"></div>
     </div>
   </div>
 </main>
@@ -150,11 +154,14 @@
 
 <script src="data.js"></script>
 <script>
+initChartDefaults();
+
 const personSelect = document.getElementById("personSelect");
 const seasonSelect = document.getElementById("seasonSelect");
 const SURVEY_IDS = ["preseason", "midseason"];
 
-let weeklyTotals, picks, people, games, careerRows;
+let weeklyTotals, picks, people, games, careerRows, predictionsOddsData;
+let seasonHistoryChart = null;
 
 function renderHero(person) {
   const nameEl = document.getElementById("profileName");
@@ -167,6 +174,33 @@ function renderHero(person) {
   subEl.textContent = row ? `Career #${rank} · ${formatPoints(row.grandTotal)} pts all-time` : "";
 }
 
+// bar per season played (NFL points, matching the stat-list below it) --
+// DNP seasons are omitted from the chart rather than shown as a zero/gap,
+// same "missing means didn't play, not scored 0" convention used elsewhere
+// (e.g. weekOverWeekGrid's null cells)
+function renderSeasonHistoryChart(person, row) {
+  const played = row ? row.history.filter(h => h.played) : [];
+  if (seasonHistoryChart) { seasonHistoryChart.destroy(); seasonHistoryChart = null; }
+  if (!played.length) return;
+  seasonHistoryChart = new Chart(document.getElementById("seasonHistoryChart"), {
+    type: "bar",
+    data: {
+      labels: played.map(h => h.season),
+      datasets: [{
+        data: played.map(h => h.points),
+        backgroundColor: PERSON_COLORS[person] || PALETTE.gold,
+        borderRadius: 6,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { title: { display: true, text: "NFL points" } } },
+    },
+  });
+}
+
 function renderCareer(person) {
   const row = careerRows.find(r => r.person === person);
   if (!row) {
@@ -174,6 +208,7 @@ function renderCareer(person) {
       document.getElementById(id).textContent = "--";
     }
     document.getElementById("seasonHistoryOut").innerHTML = "";
+    renderSeasonHistoryChart(person, null);
     return;
   }
   document.getElementById("careerPointsOut").textContent = formatPoints(row.grandTotal);
@@ -183,6 +218,7 @@ function renderCareer(person) {
   document.getElementById("careerWinsOut").textContent = row.totalWins;
   document.getElementById("careerSeasonsOut").textContent = row.seasonsPlayed;
 
+  renderSeasonHistoryChart(person, row);
   document.getElementById("seasonHistoryOut").innerHTML = row.history.map(h => {
     const value = h.played ? `#${h.rank} &middot; ${h.points} pts` : "DNP";
     return `<div class="stat-row"><span class="stat-label">${h.season}</span><span class="stat-value">${value}</span></div>`;
@@ -216,13 +252,26 @@ function renderPredictionsSurvey(survey, person, suffix) {
   const rankEl = document.getElementById(`predRank-${suffix}`);
   const scoreEl = document.getElementById(`predScore-${suffix}`);
   const pctEl = document.getElementById(`predPct-${suffix}`);
+  const betEl = document.getElementById(`predBettingRow-${suffix}`);
   if (!ranked) {
     rankEl.textContent = "--"; scoreEl.textContent = "--"; pctEl.textContent = "--";
+    betEl.innerHTML = "";
     return;
   }
   rankEl.textContent = "#" + ranked.rank;
   scoreEl.textContent = `${ranked.total} / ${ranked.possible}`;
   pctEl.textContent = Math.round((ranked.total / ranked.possible) * 100) + "%";
+
+  // same graceful-degradation check predictions.html uses -- a season/survey
+  // with no real researched odds just means this row doesn't render
+  const hasOdds = predictionsOddsData && predictionsOddsData.textOdds &&
+    Object.keys(predictionsOddsData.textOdds[survey.id] || {}).length > 0;
+  if (hasOdds) {
+    const total = predictionsBettingTotals(survey, predictionsOddsData, 1)[person] || 0;
+    betEl.innerHTML = `<div class="stat-row"><span class="stat-label">Betting P/L ($1/question)</span><span class="stat-value ${moneyClass(total)}">${formatMoney(total)}</span></div>`;
+  } else {
+    betEl.innerHTML = "";
+  }
 }
 
 function render(person) {
@@ -253,8 +302,9 @@ async function boot() {
     document.getElementById("thisSeasonLabel").textContent = `This Season (${season})`;
     document.getElementById("predictionsLabel").textContent = `Predictions (${season})`;
 
-    const [dataResult, predictionsData] = await Promise.all([loadData(season), loadPredictions(season)]);
+    const [dataResult, predictionsData, oddsData] = await Promise.all([loadData(season), loadPredictions(season), loadPredictionsOdds(season)]);
     ({ weeklyTotals, picks, people, games } = dataResult);
+    predictionsOddsData = oddsData;
 
     const prevPerson = personSelect.value;
     const careerPeople = careerRows.map(r => r.person);
