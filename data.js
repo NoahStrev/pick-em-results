@@ -215,10 +215,17 @@ function weekOverWeekGrid(weeklyTotals, people) {
   return { weeks, grid, winners };
 }
 
+// Uses each person's own latest row (its cumulativeEarned already includes
+// everything before it), not just rows from the season's final week -- someone
+// who skipped the most recent week (DNP) must still appear with their
+// carried-forward total, same as seasonStandingsSeries does for the chart.
 function finalLeaderboard(weeklyTotals, people) {
-  const finalWeekOrder = Math.max(...weeklyTotals.map(r => r.weekOrder));
-  const rows = weeklyTotals.filter(r => r.weekOrder === finalWeekOrder);
-  return rows
+  const latest = new Map();
+  for (const r of weeklyTotals) {
+    const cur = latest.get(r.person);
+    if (!cur || r.weekOrder > cur.weekOrder) latest.set(r.person, r);
+  }
+  return [...latest.values()]
     .map(r => ({ person: r.person, points: r.cumulativeEarned }))
     .sort((a, b) => b.points - a.points);
 }
